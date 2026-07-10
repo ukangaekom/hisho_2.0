@@ -1,7 +1,7 @@
 [package]
 name = "hisho_2"
 version = "1.0.0"
-edition = "2024"
+edition = "2021"
 authors = ["Ekomabasi Ukagna <ekomabasiuk@gmail.com>"]
 description = "A modern Mantle agent CLI for local system installation. Talk with mantle network from your terminal"
 license = "MIT OR Apache-2.0"
