@@ -1,6 +1,6 @@
 [package]
-name = "hisho_2-0"
-version = "0.1.0"
+name = "hisho_2"
+version = "1.0.0"
 edition = "2024"
 authors = ["Ekomabasi Ukagna <ekomabasiuk@gmail.com>"]
 description = "A modern Mantle agent CLI for local system installation. Talk with mantle network from your terminal"
@@ -11,7 +11,7 @@ keywords = ["cli", "agent", "mantle", "automation"]
 categories = ["command-line-utilities"]
 
 [[bin]]
-name = "mantle-agent-cli"
+name = "hisho_2-0"
 path = "src/main.rs"
 
 
