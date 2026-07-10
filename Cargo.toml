@@ -1,0 +1,57 @@
+[package]
+name = "hisho_2-0"
+version = "0.1.0"
+edition = "2024"
+authors = ["Ekomabasi Ukagna <ekomabasiuk@gmail.com>"]
+description = "A modern Mantle agent CLI for local system installation. Talk with mantle network from your terminal"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/ukangaekom/mantle_agent_cli"
+readme = "README.md"
+keywords = ["cli", "agent", "mantle", "automation"]
+categories = ["command-line-utilities"]
+
+[[bin]]
+name = "mantle-agent-cli"
+path = "src/main.rs"
+
+
+[profile.release]
+opt-level = 3       # Maximum optimization for speed
+lto = true          # Link-Time Optimization to eliminate dead code across crates
+codegen-units = 1   # Reduces parallel generation blocks to allow deeper optimizations
+panic = "abort"     # Eliminates stack unwinding overhead for a smaller, faster binary
+strip = true
+
+# The profile that 'dist' will build with
+[profile.dist]
+inherits = "release"
+lto = "thin"
+
+
+[dependencies]
+clap = { version = "4.5", features = ["derive"] }
+colored = "2.1"
+tokio = { version = "1.0", features = ["full"] } # Added for smooth async timing
+crossterm = "0.27" # Added for screen clearing and cursor control
+figlet-rs = "0.1"
+ratatui = "0.26" # Production UI and double-buffering layout engine
+viuer = "0.11.0"
+dialoguer = "0.12.0"
+console = "0.16.3"
+
+# clap_complete = "4.4"
+# color-eyre = "0.6"
+# directories = "5.0"
+# tracing = "0.1"
+# tracing-subscriber = { version = "0.3", features = ["fmt", "env-filter"] }
+
+
+# Crytography
+
+# ethers = {version= "2.0", features = ["signer"]}
+rand = "0.8"
+serde_json = "1.0.150"
+serde = { version = "1.0.228", features = ["derive"] }
+directories = "6.0.0"
+reqwest = "0.13.4"
+
