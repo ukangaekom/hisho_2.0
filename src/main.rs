@@ -11,10 +11,10 @@ use figlet_rs::FIGfont;
 
 #[derive(Parser)]
 #[command(
-    name = "",
-    author = "",
-    version = "", 
-    about = "", 
+    name = "Hisho",
+    author = "Ekomabasi Ukanga",
+    version = "1.0", 
+    about = "Terminal Onchain Finance Agent", 
     long_about = None
 )]
 
@@ -30,7 +30,7 @@ enum Commands {
     Settings,
 }
 
-const UTF8_IMAGE_ASSET: &str = include_str!("../assets/chain_ant_optimized.txt");
+const UTF8_IMAGE_ASSET: &str = include_str!("../assets/hisho_agent.txt");
 
 #[tokio::main]
 async fn main() {
