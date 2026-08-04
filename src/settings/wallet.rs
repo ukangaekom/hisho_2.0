@@ -1,60 +1,78 @@
-use super::store;
-use alloy::signers::local::PrivateKeySigner;
-use dialoguer::{Password, Select, theme::ColorfulTheme};
-use std::error::Error;
+use bip39::{Language, Mnemonic};
+use rand::RngCore;
+use zeroize::{Zeroize, ZeroizeOnDrop, Zeroizing};
 
-pub fn get_or_set_wallet() -> Result<String, Box<dyn Error>> {
-    let mut config = store::load_config()?;
+#[derive(Zeroize, ZeroizeOnDrop)]
+pub struct SecureMnemonic {
+    phrase: Zeroizing<String>,
+}
 
-    if let Some(stored_pk) = config.wallet_pk {
-        return Ok(stored_pk);
+impl SecureMnemonic {
+    pub fn new(phrase: String) -> Self {
+        Self {
+            phrase: Zeroizing::new(phrase),
+        }
     }
 
-    let options = vec![
-        "Import Existing EVM Private Key",
-        "Generate New Local Wallet",
-    ];
+    /// Generates a 24-word BIP-39 seed phrase using 256 bits of cryptographically secure entropy.
+    pub fn generate_wallet() -> Result<Self, String> {
+        let mut entropy = [0u8; 32];
+        rand::thread_rng().fill_bytes(&mut entropy);
 
-    let selection = Select::with_theme(&ColorfulTheme::default())
-        .with_prompt("Select your Wallet Setup Method")
-        .default(0)
-        .items(&options)
-        .interact()?;
+        let mnemonic = Mnemonic::from_entropy_in(Language::English, &entropy)
+            .map_err(|e| format!("Failed to generate Mnemonic: {}", e))?;
+        entropy.zeroize();
 
-    let private_key_hex = match selection {
-        0 => {
-            let pk: String = Password::with_theme(&ColorfulTheme::default())
-                .with_prompt("Insert your Wallet Private Key (Hex format)")
-                .interact()?;
-            pk.trim_start_matches("0x").to_string()
-        }
-        1 => {
-            // Generate new wallet using Alloy
-            let signer = PrivateKeySigner::random();
-            let pk_hex = hex::encode(signer.to_bytes());
-            println!("\x1b[32m✔ Wallet generated successfully.\x1b[0m");
-            println!("Your Public Address: \x1b[1m{}\x1b[0m", signer.address());
-            println!("(Your private key has been safely encrypted in your local config.)");
-            pk_hex
-        }
-        _ => unreachable!(),
-    };
+        Ok(Self {
+            phrase: Zeroizing::new(mnemonic.to_string()),
+        })
+    }
 
-    config.wallet_pk = Some(private_key_hex.clone());
-    store::save_config(&config)?;
+    /// Parses and validates an existing 24-word BIP-39 raw phrase.
+    pub fn from_phrase(raw_phrase: String) -> Result<Self, String> {
+        let _mnemonic = Mnemonic::parse_in_normalized(Language::English, &raw_phrase)
+            .map_err(|e| format!("Invalid BIP-39 seed phrase: {}", e))?;
 
-    println!("\x1b[32m✔ Wallet securely locked to local config.\x1b[0m");
-    Ok(private_key_hex)
+        Ok(Self {
+            phrase: Zeroizing::new(raw_phrase),
+        })
+    }
+
+    /// Returns a reference to the inner zeroed mnemonic phrase string.
+    pub fn phrase(&self) -> &str {
+        &self.phrase
+    }
 }
 
-pub fn is_configured() -> bool {
-    store::load_config()
-        .map(|c| c.wallet_pk.is_some())
-        .unwrap_or(false)
+pub fn get_bitcoin_wallet_address(_mnemonic: &SecureMnemonic) -> Result<String, String> {
+    // Stub for Bitcoin wallet derivation
+    Err("Bitcoin wallet derivation not implemented yet".to_string())
 }
 
-pub fn reset() -> Result<(), Box<dyn Error>> {
-    let mut config = store::load_config()?;
-    config.wallet_pk = None;
-    store::save_config(&config)
+pub fn get_evm_wallet_address(_mnemonic: &SecureMnemonic) -> Result<String, String> {
+    // Stub for EVM wallet address derivation
+    Err("EVM wallet derivation not implemented yet".to_string())
+}
+
+pub fn get_solana_wallet_address(_mnemonic: &SecureMnemonic) -> Result<String, String> {
+    // Stub for Solana wallet derivation
+    Err("Solana wallet derivation not implemented yet".to_string())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_generate_24_word_wallet() {
+        let mnemonic = SecureMnemonic::generate_wallet().expect("Should generate 24-word wallet");
+        let words: Vec<&str> = mnemonic.phrase().split_whitespace().collect();
+        assert_eq!(words.len(), 24, "Generated mnemonic must contain exactly 24 words");
+    }
+
+    #[test]
+    fn test_invalid_mnemonic_fails() {
+        let result = SecureMnemonic::from_phrase("invalid word phrase test".to_string());
+        assert!(result.is_err(), "Invalid phrase must return error");
+    }
 }

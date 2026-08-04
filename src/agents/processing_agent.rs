@@ -2,6 +2,8 @@
 use genai::chat::{ChatMessage, ChatRequest};
 use genai::Client;
 use std::sync::{Arc, OnceLock};
+use eyre::Error;
+
 
 // static PROCESS_SYSTEM_CONFIGURATION: OnceCell<String> = OnceCell::const_new();
 static CLIENT: OnceLock<Arc<Client>> = OnceLock::new();
@@ -17,7 +19,7 @@ pub fn get_client() -> Arc<Client> {
 }
 
 
-pub async fn process(_text:&str) -> Option<std::string::String> {
+pub async fn process(_text:&str) -> Result<String, Error> {
 
     let client = get_client();
     let chat_req: ChatRequest = ChatRequest::new(vec![
@@ -31,6 +33,11 @@ pub async fn process(_text:&str) -> Option<std::string::String> {
 
     println!("{:?}",&chat_res);
     
-    chat_res.expect("REASON").content_text_into_string()
-    
+    match chat_res {
+        Ok(res) => Ok(res.into_first_text().unwrap_or_default()),
+        Err(err) => {
+            eprintln!("Failed to execute chat: {:?}", err);
+            Ok(String::from("Unable to get reasoning"))
+        }
+    }
 }

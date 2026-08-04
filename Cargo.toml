@@ -15,6 +15,10 @@ name = "hisho"
 path = "src/main.rs"
 
 
+#[path = "unit/chain_test.rs"]
+
+
+
 [profile.release]
 opt-level = 3       # Maximum optimization for speed
 lto = true          # Link-Time Optimization to eliminate dead code across crates
@@ -38,6 +42,7 @@ ratatui = "0.26" # Production UI and double-buffering layout engine
 viuer = "0.11.0"
 dialoguer = "0.12.0"
 console = "0.16.3"
+inquire = "0.7"
 
 # clap_complete = "4.4"
 # color-eyre = "0.6"
@@ -46,12 +51,41 @@ console = "0.16.3"
 # tracing-subscriber = { version = "0.3", features = ["fmt", "env-filter"] }
 
 
-# Crytography
+# x402 Ecosystem crates
+x402-facilitator-local = "2.0.2"
+x402-axum = "2.0.2"    # Server middleware for gating Hisho routes
+x402-reqwest = "2.0.2"    # Auto-paying client wrapper for outbound agent requests
 
-# ethers = {version= "2.0", features = ["signer"]}
+
+
+# Wallet & Signer primitives & Crytography
+ethers = {version= "2.0", features = ["legacy", "ws", "optimism", "celo"]}
+bip39 = {version="2.0.0", features = ["zeroize"]}
+zeroize = {version="1.6.0", features = ["zeroize_derive"]}
+keyring = "2.1"
+aes-gcm = {version="0.10", features=["zeroize"]}
+argon2 = "0.5"
+machine-uid = "0.5"
 rand = "0.8"
+bincode = "1.3"
+hex = "0.4.3"
+
+
+
+# Crytography
 serde_json = "1.0.150"
 serde = { version = "1.0.228", features = ["derive"] }
 directories = "6.0.0"
 reqwest = "0.13.4"
+redb = "4.1.0"
+genai = "0.6.5"
+thiserror = "2.0.19"
+eyre = "0.6.12"
+alloy = "2.2.0"
+
+
+
+[dev-dependencies]
+assert_cmd= "1"
+predicates = "1"
 

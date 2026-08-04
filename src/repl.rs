@@ -19,7 +19,7 @@ pub async fn start() {
 
     println!(
         "{}",
-        "Connected to Mantle Agent Core. Type 'exit' or 'quit' to terminate.\n".bright_green()
+        "Connected to Hisho. Type 'exit' or 'quit' to terminate.\n".bright_green()
     );
 
     let mut input = String::new();

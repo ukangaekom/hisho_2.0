@@ -1,13 +1,13 @@
+mod chat;
+mod agents;
+// Crates
+use crate::chat::chat::start;
+
 // Importation of Rust Cli library
 use clap::{Parser, Subcommand};
 use colored::*; // For colored output
 use figlet_rs::FIGfont;
-// mod settings;
-// mod agents;
-// mod connection;
-// mod repl;
-// mod services;
-// mod tools;
+mod settings;
 
 #[derive(Parser)]
 #[command(
@@ -109,18 +109,25 @@ async fn main() {
 
     match &cli.command {
         Some(Commands::Start) => {
-            // repl::start().await;
+            if let Err(e) = settings::config::ensure_configured() {
+                eprintln!("Configuration setup error: {}", e);
+                return;
+            }
+            start().await;
         }
         Some(Commands::Status) => {
             println!("{} Runtime is active. Latency: <1ms.", "✔".green().bold());
         }
         Some(Commands::Settings) => {
-            // if let Err(e) = settings::run_setup() {
-            //     eprintln!("Error during setup: {}", e);
-            // }
+            if let Err(e) = settings::config::interactive_settings_menu() {
+                eprintln!("Error during settings configuration: {}", e);
+            }
         }
         None => {
-            // Default behavior when just running `mantle-speed`
+            if let Err(e) = settings::config::ensure_configured() {
+                eprintln!("Configuration setup error: {}", e);
+                return;
+            }
             println!(
                 "{}",
                 "Tip: Use --help to view all available internal tools and flags."
