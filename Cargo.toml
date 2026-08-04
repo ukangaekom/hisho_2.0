@@ -52,9 +52,12 @@ inquire = "0.7"
 
 
 # x402 Ecosystem crates
-x402-facilitator-local = "2.0.2"
 x402-axum = "2.0.2"    # Server middleware for gating Hisho routes
 x402-reqwest = "2.0.2"    # Auto-paying client wrapper for outbound agent requests
+
+[target.'cfg(unix)'.dependencies]
+x402-facilitator-local = "2.0.2"
+
 
 
 
