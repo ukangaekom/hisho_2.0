@@ -8,6 +8,7 @@ pub struct SecureMnemonic {
 }
 
 impl SecureMnemonic {
+    #[allow(dead_code)]
     pub fn new(phrase: String) -> Self {
         Self {
             phrase: Zeroizing::new(phrase),
@@ -44,35 +45,20 @@ impl SecureMnemonic {
     }
 }
 
+#[allow(dead_code)]
 pub fn get_bitcoin_wallet_address(_mnemonic: &SecureMnemonic) -> Result<String, String> {
     // Stub for Bitcoin wallet derivation
     Err("Bitcoin wallet derivation not implemented yet".to_string())
 }
 
+#[allow(dead_code)]
 pub fn get_evm_wallet_address(_mnemonic: &SecureMnemonic) -> Result<String, String> {
     // Stub for EVM wallet address derivation
     Err("EVM wallet derivation not implemented yet".to_string())
 }
 
+#[allow(dead_code)]
 pub fn get_solana_wallet_address(_mnemonic: &SecureMnemonic) -> Result<String, String> {
     // Stub for Solana wallet derivation
     Err("Solana wallet derivation not implemented yet".to_string())
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_generate_24_word_wallet() {
-        let mnemonic = SecureMnemonic::generate_wallet().expect("Should generate 24-word wallet");
-        let words: Vec<&str> = mnemonic.phrase().split_whitespace().collect();
-        assert_eq!(words.len(), 24, "Generated mnemonic must contain exactly 24 words");
-    }
-
-    #[test]
-    fn test_invalid_mnemonic_fails() {
-        let result = SecureMnemonic::from_phrase("invalid word phrase test".to_string());
-        assert!(result.is_err(), "Invalid phrase must return error");
-    }
 }

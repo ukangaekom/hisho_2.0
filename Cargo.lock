@@ -3702,6 +3702,7 @@ dependencies = [
  "hex",
  "inquire",
  "keyring",
+ "libc",
  "machine-uid",
  "predicates 1.0.8",
  "rand 0.8.6",
@@ -3713,9 +3714,7 @@ dependencies = [
  "thiserror 2.0.19",
  "tokio",
  "viuer",
- "x402-axum",
  "x402-facilitator-local",
- "x402-reqwest",
  "zeroize",
 ]
 
@@ -5834,20 +5833,6 @@ dependencies = [
  "wasm-bindgen-futures",
  "wasm-streams",
  "web-sys",
-]
-
-[[package]]
-name = "reqwest-middleware"
-version = "0.5.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "07bc3f1384cffa4f274dad2d4ddd73aed32fed8f786d96c6be8aa4e5fd3c3b58"
-dependencies = [
- "anyhow",
- "async-trait",
- "http 1.4.2",
- "reqwest 0.13.4",
- "thiserror 2.0.19",
- "tower-service",
 ]
 
 [[package]]
@@ -8323,24 +8308,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "x402-axum"
-version = "2.0.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "800b1f6eed4a8c3a338ae0ff81343cc33958da133973766c72e6b3f83497c878"
-dependencies = [
- "axum-core",
- "http 1.4.2",
- "reqwest 0.13.4",
- "serde",
- "serde_json",
- "thiserror 2.0.19",
- "tokio",
- "tower",
- "url",
- "x402-types",
-]
-
-[[package]]
 name = "x402-facilitator-local"
 version = "2.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -8353,20 +8320,6 @@ dependencies = [
  "tokio",
  "tokio-util",
  "tower-http",
- "x402-types",
-]
-
-[[package]]
-name = "x402-reqwest"
-version = "2.0.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c77a965e7346eb4e433a6023a609b2bf002be0f76fea20e0ceaa34d86c983a94"
-dependencies = [
- "async-trait",
- "http 1.4.2",
- "reqwest 0.13.4",
- "reqwest-middleware",
- "serde_json",
  "x402-types",
 ]
 

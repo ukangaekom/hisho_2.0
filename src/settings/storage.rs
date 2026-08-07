@@ -8,6 +8,7 @@ use argon2::{
 };
 use keyring::Entry;
 use rand::RngCore;
+use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::PathBuf;
 use zeroize::{Zeroize, Zeroizing};
@@ -16,9 +17,14 @@ use crate::settings::config::AppSettings;
 use crate::settings::wallet::SecureMnemonic;
 
 const SERVICE_NAME: &str = "hisho";
-const KEYCHAIN_SEED: &str = "wallet_seed_encrypted";
-const KEYCHAIN_PIN_SALT: &str = "wallet_pin_salt";
-const KEYCHAIN_PIN_HASH: &str = "wallet_pin_hash";
+const KEYCHAIN_WALLET_BUNDLE: &str = "hisho_wallet_bundle";
+
+#[derive(Serialize, Deserialize)]
+struct WalletBundle {
+    salt: String,
+    pin_hash: String,
+    encrypted_seed_hex: String,
+}
 
 fn get_config_path() -> Result<PathBuf, String> {
     if let Some(proj_dirs) = directories::ProjectDirs::from("com", "hisho", "hisho") {
@@ -48,9 +54,26 @@ pub fn load_app_settings() -> Result<Option<AppSettings>, String> {
     Ok(Some(config))
 }
 
-/// Checks if a wallet seed phrase is already stored in the OS Keyring.
+// Hardening of Memory
+pub fn harden_process_memory() {
+    #[cfg(target_family = "unix")]
+    unsafe {
+        #[cfg(target_os = "linux")]
+        {
+            // Disable core dumps on Linux to prevent RAM forensics from crash states
+            libc::prctl(libc::PR_SET_DUMPABLE, 0, 0, 0, 0);
+        }
+        let limit = libc::rlimit {
+            rlim_cur: 0,
+            rlim_max: 0,
+        };
+        libc::setrlimit(libc::RLIMIT_CORE, &limit);
+    }
+}
+
+/// Checks if an encrypted wallet bundle is already anchored in the OS Keyring.
 pub fn has_wallet() -> bool {
-    let entry = Entry::new(SERVICE_NAME, KEYCHAIN_SEED);
+    let entry = Entry::new(SERVICE_NAME, KEYCHAIN_WALLET_BUNDLE);
     if let Ok(entry) = entry {
         if let Ok(pwd) = entry.get_password() {
             return !pwd.trim().is_empty();
@@ -59,7 +82,7 @@ pub fn has_wallet() -> bool {
     false
 }
 
-/// Key derivation helper using Argon2id to derive a 32-byte key from PIN + Salt.
+/// Key derivation helper using Argon2id to map PIN + Salt to a 32-byte encryption key.
 fn derive_key_from_pin(pin: &str, salt_str: &str) -> Result<Zeroizing<[u8; 32]>, String> {
     let argon2 = Argon2::default();
     let mut key = [0u8; 32];
@@ -69,19 +92,17 @@ fn derive_key_from_pin(pin: &str, salt_str: &str) -> Result<Zeroizing<[u8; 32]>,
     Ok(Zeroizing::new(key))
 }
 
-/// Encrypts and securely stores the 24-word seed phrase into the OS Keyring protected by a System PIN.
-/// Seed phrase CANNOT be overwritten or regenerated if it already exists.
+/// Encrypts and atomically writes the seed phrase to the OS Keyring protected by a System PIN.
 pub fn save_wallet_with_pin(mnemonic: &SecureMnemonic, pin: &str) -> Result<(), String> {
     if has_wallet() {
-        return Err(
-            "Wallet seed phrase already exists in OS Keyring. Seed phrases cannot be changed or regenerated."
-                .to_string(),
-        );
+        return Err("Wallet already exists. Seed phrases cannot be overwritten or changed.".to_string());
     }
 
     if pin.trim().len() < 4 {
         return Err("System PIN must be at least 4 characters long.".to_string());
     }
+
+    harden_process_memory();
 
     let salt = SaltString::generate(&mut rand::thread_rng());
     let salt_str = salt.as_str().to_string();
@@ -94,7 +115,6 @@ pub fn save_wallet_with_pin(mnemonic: &SecureMnemonic, pin: &str) -> Result<(), 
 
     let derived_key = derive_key_from_pin(pin, &salt_str)?;
 
-    // Encrypt mnemonic phrase with AES-256-GCM
     let cipher = Aes256Gcm::new_from_slice(&*derived_key)
         .map_err(|e| format!("Failed to create cipher: {}", e))?;
 
@@ -106,48 +126,45 @@ pub fn save_wallet_with_pin(mnemonic: &SecureMnemonic, pin: &str) -> Result<(), 
         .encrypt(nonce, mnemonic.phrase().as_bytes())
         .map_err(|e| format!("Encryption error: {}", e))?;
 
-    // Combine nonce (12 bytes) + ciphertext into hex string
     let mut payload = nonce_bytes.to_vec();
     payload.extend(ciphertext);
     let hex_payload = hex::encode(payload);
 
-    // Save salt, pin_hash, and encrypted seed into OS Keyring
-    Entry::new(SERVICE_NAME, KEYCHAIN_PIN_SALT)
-        .map_err(|e| e.to_string())?
-        .set_password(&salt_str)
-        .map_err(|e| format!("Failed to store salt in OS Keyring: {}", e))?;
+    // Bundle into a single payload to guarantee atomic state writes
+    let bundle = WalletBundle {
+        salt: salt_str,
+        pin_hash,
+        encrypted_seed_hex: hex_payload,
+    };
 
-    Entry::new(SERVICE_NAME, KEYCHAIN_PIN_HASH)
-        .map_err(|e| e.to_string())?
-        .set_password(&pin_hash)
-        .map_err(|e| format!("Failed to store PIN hash in OS Keyring: {}", e))?;
+    let bundle_json = serde_json::to_string(&bundle)
+        .map_err(|e| format!("Failed to serialize wallet bundle: {}", e))?;
 
-    Entry::new(SERVICE_NAME, KEYCHAIN_SEED)
+    Entry::new(SERVICE_NAME, KEYCHAIN_WALLET_BUNDLE)
         .map_err(|e| e.to_string())?
-        .set_password(&hex_payload)
-        .map_err(|e| format!("Failed to store seed phrase in OS Keyring: {}", e))?;
+        .set_password(&bundle_json)
+        .map_err(|e| format!("Failed to store atomic wallet bundle in OS Keyring: {}", e))?;
 
     Ok(())
 }
 
-/// Decrypts and retrieves the seed phrase from the OS Keyring after validating the System PIN.
+/// Authenticates the System PIN, decrypts the vault, and returns a SecureMnemonic.
 pub fn view_wallet_with_pin(pin: &str) -> Result<SecureMnemonic, String> {
     if !has_wallet() {
-        return Err("No wallet found in system. Please set up a wallet first.".to_string());
+        return Err("No wallet found in system. Please initialize a wallet first.".to_string());
     }
 
-    let salt_str = Entry::new(SERVICE_NAME, KEYCHAIN_PIN_SALT)
+    harden_process_memory();
+
+    let bundle_json = Entry::new(SERVICE_NAME, KEYCHAIN_WALLET_BUNDLE)
         .map_err(|e| e.to_string())?
         .get_password()
-        .map_err(|e| format!("Failed to load salt from OS Keyring: {}", e))?;
+        .map_err(|e| format!("Failed to load wallet bundle from OS Keyring: {}", e))?;
 
-    let stored_pin_hash_str = Entry::new(SERVICE_NAME, KEYCHAIN_PIN_HASH)
-        .map_err(|e| e.to_string())?
-        .get_password()
-        .map_err(|e| format!("Failed to load PIN hash from OS Keyring: {}", e))?;
+    let bundle: WalletBundle = serde_json::from_str(&bundle_json)
+        .map_err(|e| format!("Failed to parse wallet bundle: {}", e))?;
 
-    // Verify PIN against Argon2 hash
-    let parsed_hash = PasswordHash::new(&stored_pin_hash_str)
+    let parsed_hash = PasswordHash::new(&bundle.pin_hash)
         .map_err(|e| format!("Invalid stored password hash: {}", e))?;
 
     if Argon2::default()
@@ -157,26 +174,21 @@ pub fn view_wallet_with_pin(pin: &str) -> Result<SecureMnemonic, String> {
         return Err("Incorrect System PIN! Access denied.".to_string());
     }
 
-    // Retrieve payload
-    let hex_payload = Entry::new(SERVICE_NAME, KEYCHAIN_SEED)
-        .map_err(|e| e.to_string())?
-        .get_password()
-        .map_err(|e| format!("Failed to load encrypted seed from OS Keyring: {}", e))?;
-
-    let payload = hex::decode(&hex_payload)
+    let payload = hex::decode(&bundle.encrypted_seed_hex)
         .map_err(|e| format!("Failed to decode encrypted seed payload: {}", e))?;
 
     if payload.len() < 12 {
-        return Err("Corrupted seed phrase storage.".to_string());
+        return Err("Corrupted seed phrase storage bundle.".to_string());
     }
 
     let (nonce_bytes, ciphertext) = payload.split_at(12);
-    let derived_key = derive_key_from_pin(pin, &salt_str)?;
+    let derived_key = derive_key_from_pin(pin, &bundle.salt)?;
 
     let cipher = Aes256Gcm::new_from_slice(&*derived_key)
         .map_err(|e| format!("Failed to create cipher: {}", e))?;
 
     let nonce = Nonce::from_slice(nonce_bytes);
+    
     let mut decrypted_bytes = cipher
         .decrypt(nonce, ciphertext)
         .map_err(|e| format!("Decryption failed: {}", e))?;

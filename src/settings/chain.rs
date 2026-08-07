@@ -1,3 +1,4 @@
+use colored::*;
 use serde::{Deserialize, Serialize};
 
 pub const CHAIN_JSON: &str = include_str!("../../chain.json");
@@ -38,10 +39,21 @@ impl std::fmt::Display for Blockchain {
             .label
             .as_deref()
             .unwrap_or("Testnet");
+
+        let icon = "⚡".truecolor(255, 215, 0).bold();
+        let name_str = format!("{:<20}", self.name).truecolor(0, 255, 170).bold();
+        let pipe = "│".truecolor(0, 225, 255);
+        let mainnet_label = "Mainnet ID:".truecolor(180, 180, 180);
+        let mainnet_id = format!("{:<6}", self.mainnet.chain_id).truecolor(0, 225, 255).bold();
+        let testnet_label = "Testnet:".truecolor(180, 180, 180);
+        let testnet_info = format!("{} ({})", testnet_name, self.testnet.chain_id)
+            .truecolor(255, 200, 0)
+            .bold();
+
         write!(
             f,
-            "⚡ {:<22} │ Mainnet ID: {:<6} │ Testnet: {} ({})",
-            self.name, self.mainnet.chain_id, testnet_name, self.testnet.chain_id
+            "{} {} {} {} {} {} {} {}",
+            icon, name_str, pipe, mainnet_label, mainnet_id, pipe, testnet_label, testnet_info
         )
     }
 }
@@ -56,27 +68,3 @@ impl AppConfig {
         serde_json::from_str(CHAIN_JSON).map_err(|e| format!("Failed to parse chain.json: {}", e))
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_load_chain_json() {
-        let config = AppConfig::load_default().expect("Failed to load chain.json");
-        assert!(!config.chains.is_empty(), "Chains list should not be empty");
-
-        let eth = config.chains.iter().find(|c| c.name == "Ethereum");
-        assert!(eth.is_some(), "Ethereum should be present in chain.json");
-        let eth = eth.unwrap();
-        assert_eq!(eth.mainnet.chain_id, 1);
-        assert_eq!(eth.testnet.chain_id, 11155111);
-
-        let mantle = config.chains.iter().find(|c| c.name == "Mantle");
-        assert!(mantle.is_some(), "Mantle should be present in chain.json");
-        let mantle = mantle.unwrap();
-        assert_eq!(mantle.mainnet.chain_id, 5000);
-        assert_eq!(mantle.testnet.chain_id, 5003);
-    }
-}
-

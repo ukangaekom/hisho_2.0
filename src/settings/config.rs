@@ -1,10 +1,20 @@
 use colored::*;
+use inquire::ui::{Color, RenderConfig, StyleSheet, Styled};
 use inquire::{Password, Select, Text};
 use serde::{Deserialize, Serialize};
 
 use crate::settings::chain::{AppConfig, Blockchain};
 use crate::settings::storage;
 use crate::settings::wallet::SecureMnemonic;
+
+fn shiny_render_config() -> RenderConfig<'static> {
+    let mut config = RenderConfig::default_colored();
+    config.prompt_prefix = Styled::new("⚡").with_fg(Color::LightYellow);
+    config.highlighted_option_prefix = Styled::new(" 🌟 ❯ ").with_fg(Color::LightYellow);
+    config.selected_option = Some(StyleSheet::new().with_fg(Color::White));
+    config.help_message = StyleSheet::new().with_fg(Color::LightCyan);
+    config
+}
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct AppSettings {
@@ -14,10 +24,12 @@ pub struct AppSettings {
 }
 
 impl AppSettings {
+    #[allow(dead_code)]
     pub fn save(&self) -> Result<(), String> {
         storage::save_app_settings(self)
     }
 
+    #[allow(dead_code)]
     pub fn fetch() -> Result<Option<Self>, String> {
         storage::load_app_settings()
     }
@@ -70,6 +82,7 @@ pub fn ensure_configured() -> Result<AppSettings, String> {
         "Choose default blockchain (Mainnet & Testnet auto-loaded):",
         config_data.chains.clone(),
     )
+    .with_render_config(shiny_render_config())
     .with_page_size(10)
     .with_help_message("Use ↑↓ arrows to navigate • Enter to confirm selection")
     .prompt()
@@ -198,6 +211,7 @@ pub fn interactive_settings_menu() -> Result<(), String> {
                 "Select new default blockchain:",
                 config_data.chains,
             )
+            .with_render_config(shiny_render_config())
             .with_page_size(10)
             .prompt()
             .map_err(|e| format!("Selection cancelled: {}", e))?;
