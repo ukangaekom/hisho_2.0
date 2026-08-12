@@ -105,7 +105,7 @@ pub fn render_report_card(report: &str) {
         if line.trim().is_empty() {
             println!("│");
         } else {
-            println!("│  {}", line.bright_white());
+            println!("│  {}", line.bright_white().bold());
         }
     }
 
