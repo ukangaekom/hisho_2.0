@@ -2558,6 +2558,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "dotenv-flow"
+version = "0.16.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ccff2060df2e1a42732ab1e7af8c5f930ed3d0255aaadfae66e032781e8d271a"
+
+[[package]]
 name = "dunce"
 version = "1.0.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3695,6 +3701,7 @@ dependencies = [
  "crossterm 0.27.0",
  "dialoguer",
  "directories",
+ "dotenv-flow",
  "ethers",
  "eyre",
  "figlet-rs",

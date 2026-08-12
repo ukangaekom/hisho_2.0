@@ -35,6 +35,20 @@ const UTF8_IMAGE_ASSET: &str = include_str!("../assets/hisho_agent.txt");
 
 #[tokio::main]
 async fn main() {
+    // Load .env files if present
+    let _ = dotenv_flow::dotenv();
+
+    // Universal environment initialization for AppSettings / GEMINI_API_KEY
+    if let Ok(Some(settings)) = settings::config::AppSettings::fetch() {
+        if let Some(ref key) = settings.gemini_api_key {
+            if !key.trim().is_empty() {
+                unsafe {
+                    std::env::set_var("GEMINI_API_KEY", key);
+                }
+            }
+        }
+    }
+
     // 1. Load the "Big" FIGlet font for a larger, bolder presence
     let font =
         FIGfont::from_file("assets/big.flf").unwrap_or_else(|_| FIGfont::standard().unwrap());

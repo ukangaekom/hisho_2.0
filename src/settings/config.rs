@@ -60,20 +60,56 @@ fn render_card(title: &str, subtitle: &str) {
 
 /// Ensures the application is configured. Runs setup wizard if settings or wallet are missing.
 pub fn ensure_configured() -> Result<AppSettings, String> {
-    if let Ok(Some(existing_settings)) = storage::load_app_settings() {
+    if let Ok(Some(mut existing_settings)) = storage::load_app_settings() {
         if storage::has_wallet() {
-            if let Some(ref key) = existing_settings.gemini_api_key {
-                unsafe {
-                    std::env::set_var("GEMINI_API_KEY", key);
+            // Check if key is already in env
+            if let Ok(env_key) = std::env::var("GEMINI_API_KEY") {
+                if existing_settings.gemini_api_key.as_deref() != Some(&env_key) {
+                    existing_settings.gemini_api_key = Some(env_key.clone());
+                    let _ = storage::save_app_settings(&existing_settings);
                 }
-            } else if let Ok(env_key) = std::env::var("GEMINI_API_KEY") {
-                let mut updated = existing_settings.clone();
-                updated.gemini_api_key = Some(env_key.clone());
                 unsafe {
-                    std::env::set_var("GEMINI_API_KEY", env_key);
+                    std::env::set_var("GEMINI_API_KEY", &env_key);
                 }
-                let _ = storage::save_app_settings(&updated);
+                return Ok(existing_settings);
             }
+
+            // Check if key is stored in app settings
+            if let Some(ref key) = existing_settings.gemini_api_key {
+                if !key.trim().is_empty() {
+                    unsafe {
+                        std::env::set_var("GEMINI_API_KEY", key);
+                    }
+                    return Ok(existing_settings);
+                }
+            }
+
+            // If Gemini API Key is missing, prompt user to configure it persistently
+            render_banner("GEMINI AI ENGINE API KEY SETUP");
+            let key_input = Text::new("Enter your Gemini API Key:")
+                .with_help_message("Key will be saved universally in app settings")
+                .prompt()
+                .ok()
+                .filter(|s| !s.trim().is_empty());
+
+            if let Some(key) = key_input {
+                existing_settings.gemini_api_key = Some(key.clone());
+                unsafe {
+                    std::env::set_var("GEMINI_API_KEY", &key);
+                }
+                storage::save_app_settings(&existing_settings)?;
+                println!(
+                    "   {} Gemini API Key saved universally to configuration.",
+                    "✔".truecolor(0, 255, 136).bold()
+                );
+            } else {
+                println!(
+                    "   {}",
+                    "⚠️ Warning: Gemini API Key was skipped. Agentic operations will require an API key."
+                        .truecolor(255, 180, 0)
+                );
+            }
+
             return Ok(existing_settings);
         }
     }
