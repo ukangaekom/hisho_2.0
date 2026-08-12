@@ -4,7 +4,7 @@ use alloy::{
     sol,  
 };
 use std::str::FromStr;
-use crate::connection::provider::init_mantle_provider;
+use crate::connection::provider::init_rpc_provider;
 
 
 
@@ -59,7 +59,7 @@ sol!(
 
 pub async fn aave_wrapped_token_get_wrappedethaddress_token(gateway_address: &str) -> String {
 
-    let provider = init_mantle_provider().await;
+    let provider = init_rpc_provider().await;
     let gateway = Address::from_str(gateway_address).expect("REASON");
     let aave_gatway = AAVE_WRAPPED_TOKEN_GATEWAY::new(gateway,provider.clone());
     let wrapped_address_token = aave_gatway.getWETHAddress().call().await;
@@ -84,7 +84,7 @@ pub async fn aave_wrapped_token_get_wrappedethaddress_token(gateway_address: &st
 
 
 pub async fn aave_wrapped_token_get_weth_address(gateway_address: &str) -> String{
-    let provider = init_mantle_provider().await; 
+    let provider = init_rpc_provider().await; 
     let gateway = Address::from_str(gateway_address).expect("REASON");
     let aave_gatway = AAVE_WRAPPED_TOKEN_GATEWAY::new(gateway,provider.clone());
     let weth_address = aave_gatway.WETH().call().await;
@@ -107,7 +107,7 @@ pub async fn aave_wrapped_token_get_weth_address(gateway_address: &str) -> Strin
 }
 
 pub async fn aave_wrapped_token_get_pool_address(gateway_address: &str) -> String{
-    let provider = init_mantle_provider().await; 
+    let provider = init_rpc_provider().await; 
     let gateway = Address::from_str(gateway_address).expect("REASON");
     let aave_gatway = AAVE_WRAPPED_TOKEN_GATEWAY::new(gateway, provider.clone());
     let pool = aave_gatway.POOL().call().await;
@@ -129,7 +129,7 @@ pub async fn aave_wrapped_token_get_pool_address(gateway_address: &str) -> Strin
 }
 
 pub async fn aave_wrapped_token_get_owner(gateway_address: &str) -> String{
-    let provider = init_mantle_provider().await; 
+    let provider = init_rpc_provider().await; 
     let gateway = Address::from_str(gateway_address).expect("REASON");
     let aave_gatway = AAVE_WRAPPED_TOKEN_GATEWAY::new(gateway,provider.clone());
     let owner = aave_gatway.owner().call().await;

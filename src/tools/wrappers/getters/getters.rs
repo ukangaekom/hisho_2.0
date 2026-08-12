@@ -108,3 +108,13 @@ pub async fn get_nft_total_supply_mainnet_wrapper(args:&[&str])->String{
     results.join(", ")
 
 }
+
+// ==================== CHAIN SETTINGS ==========================================
+
+pub async fn switch_chain_wrapper(args: &[&str]) -> String {
+    if args.is_empty() {
+        return "Please specify the target blockchain or testnet to switch to.".to_string();
+    }
+    let query = args.join(" ");
+    crate::settings::chain::switch_chain(&query)
+}

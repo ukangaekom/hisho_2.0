@@ -1,323 +1,323 @@
-use alloy::{
-    primitives::{Address},
-    providers::Provider,
-    sol
+use crate::connection::provider::{
+    get_active_mainnet_info, get_active_testnet_info, init_mainnet_provider, init_testnet_provider,
 };
+use crate::tools::utils::{is_erc1155_nft_contract, is_erc721_nft_contract};
+use alloy::{primitives::Address, providers::Provider, sol};
 use std::str::FromStr;
-use crate::connection::provider::init_mantle_provider;
-use crate::tools::utils::{is_erc721_nft_contract, is_erc1155_nft_contract};
-
-
-
 
 // NFT Standard Contract Interface
 sol!(
-
     #[derive(Debug)]
     #[sol(rpc)]
-    contract IERC721{
-
+    contract IERC721 {
         function name() returns (string);
         function symbol() external view returns (string memory);
         function tokenURI(uint256 tokenId) external view returns (string memory);
         function totalSupply() external view returns (uint256);
-        /// @notice Returns the number of NFTs owned by `owner`.
         function balanceOf(address owner) external view returns (uint256 balance);
-        /// @notice Returns the owner of `tokenId`.
         function ownerOf(uint256 tokenId) external view returns (address owner);
-        /// @notice Safely transfers `tokenId` from `from` to `to`, checking `to` can handle ERC721.
         function safeTransferFrom(address from, address to, uint256 tokenId) external;
-        /// @notice Safe transfer with additional `data`.
         function safeTransferFrom(address from, address to, uint256 tokenId, bytes calldata data) external;
-        /// @notice Transfers `tokenId` from `from` to `to` (no safety check).
         function transferFrom(address from, address to, uint256 tokenId) external;
-        /// @notice Approves `to` to transfer `tokenId`.
         function approve(address to, uint256 tokenId) external;
-        /// @notice Returns the approved address for `tokenId`.
         function getApproved(uint256 tokenId) external view returns (address operator);
-        /// @notice Approve or remove `operator` as an operator for the caller.
         function setApprovalForAll(address operator, bool _approved) external;
-        /// @notice Returns if `operator` is allowed to manage all of `owner`'s assets.
         function isApprovedForAll(address owner, address operator) external view returns (bool);
-    
     }
 );
 
+pub async fn get_nft_total_supply_testnet(nft_address: &str) -> String {
+    let provider = init_testnet_provider().await;
+    let (chain_name, _symbol) = get_active_testnet_info();
 
-
-pub async fn get_nft_total_supply_testnet(nft_address:&str)-> String {
-
-    let provider = init_mantle_provider().await; 
-    let token_addr = Address::from_str(nft_address).expect("REASON");
+    let Ok(token_addr) = Address::from_str(nft_address) else {
+        return format!("Invalid NFT contract address format: {}", nft_address);
+    };
 
     let wallet = provider.get_code_at(token_addr).await;
 
-    if !wallet.expect("REASONS").is_empty(){
-        let erc721 = IERC721::new(token_addr,provider.clone());
-        let name = erc721.name().call().await;
-        let symbol = erc721.symbol().call().await;
-        let totalsupply = erc721.totalSupply().call().await;
+    if matches!(wallet, Ok(ref code) if !code.is_empty()) {
+        let erc721 = IERC721::new(token_addr, provider.clone());
 
-        format!("NFT collection name {:#?}, bearing the symbol: 
-        {:#?} has a total supply of {:#?} on Avax Testnet",name,symbol,totalsupply)
+        let call_name = erc721.name();
+        let call_symbol = erc721.symbol();
+        let call_supply = erc721.totalSupply();
 
-    }else{
+        let (name_res, symbol_res, supply_res) = tokio::join!(
+            call_name.call(),
+            call_symbol.call(),
+            call_supply.call()
+        );
 
-        format!("The address {}, is a Wallet address",nft_address)
+        let name = name_res.ok();
+        let symbol = symbol_res.ok();
+        let totalsupply = supply_res
+            .map(|s| s.to_string())
+            .unwrap_or_else(|_| "N/A".to_string());
 
+        format!(
+            "NFT collection name {:?}, bearing symbol {:?} has a total supply of {} on {}",
+            name, symbol, totalsupply, chain_name
+        )
+    } else {
+        format!("The address {}, is a Wallet address", nft_address)
     }
-
-   
-
 }
 
+pub async fn get_nft_total_supply_mainnet(nft_address: &str) -> String {
+    let provider = init_mainnet_provider().await;
+    let (chain_name, _symbol) = get_active_mainnet_info();
 
-
-pub async fn get_nft_total_supply_mainnet(nft_address:&str) ->String  {
-    
-    let provider = init_mantle_provider().await; 
-    let token_addr = Address::from_str(nft_address).expect("REASON");
+    let Ok(token_addr) = Address::from_str(nft_address) else {
+        return format!("Invalid NFT contract address format: {}", nft_address);
+    };
 
     let wallet = provider.get_code_at(token_addr).await;
 
-    if !wallet.expect("REASONS").is_empty(){
+    if matches!(wallet, Ok(ref code) if !code.is_empty()) {
+        let (is_721, is_1155) = tokio::join!(
+            is_erc721_nft_contract(&provider, token_addr),
+            is_erc1155_nft_contract(&provider, token_addr)
+        );
 
-        if is_erc721_nft_contract(&provider, token_addr).await {
-            let erc721 = IERC721::new(token_addr,provider.clone());
-            let name = erc721.name().call().await;
-            let symbol = erc721.symbol().call().await;
-            let totalsupply = erc721.totalSupply().call().await;
-            format!("The ERC721 NFT collection name {:#?}, bearing the symbol:
-         {:#?} has a total supply of {:#?}",name,symbol,totalsupply)
+        if is_721 || is_1155 {
+            let standard_str = if is_721 { "ERC721" } else { "ERC1155" };
+            let erc721 = IERC721::new(token_addr, provider.clone());
 
-        } else if is_erc1155_nft_contract(&provider, token_addr).await {
-            let erc721 = IERC721::new(token_addr,provider.clone());
-            let name = erc721.name().call().await;
-            let symbol = erc721.symbol().call().await;
-            let totalsupply = erc721.totalSupply().call().await;
-            format!("The ERC1155 NFT collection name {:#?}, bearing the symbol:
-         {:#?} has a total supply of {:#?}",name,symbol,totalsupply)
+            let call_name = erc721.name();
+            let call_symbol = erc721.symbol();
+            let call_supply = erc721.totalSupply();
 
-        }else{
-            format!("This contract address isn't a standard NFT")
+            let (name_res, symbol_res, supply_res) = tokio::join!(
+                call_name.call(),
+                call_symbol.call(),
+                call_supply.call()
+            );
+
+            let name = name_res.ok();
+            let symbol = symbol_res.ok();
+            let totalsupply = supply_res
+                .map(|s| s.to_string())
+                .unwrap_or_else(|_| "N/A".to_string());
+
+            format!(
+                "The {} NFT collection name {:?}, bearing symbol {:?} has a total supply of {} on {}",
+                standard_str, name, symbol, totalsupply, chain_name
+            )
+        } else {
+            format!("This contract address isn't a standard NFT on {}", chain_name)
         }
-        
-    }else{
-        format!("The address {}, is a Wallet address",nft_address)
-
+    } else {
+        format!("The address {}, is a Wallet address", nft_address)
     }
-    
-
 }
 
+pub async fn get_nft_details_testnet(nft_address: &str) -> String {
+    let provider = init_testnet_provider().await;
+    let (chain_name, _symbol) = get_active_testnet_info();
 
-
-pub async fn get_nft_details_testnet(nft_address:&str)-> String  {
-
-    let provider = init_mantle_provider().await;  
-
-    let token_addr = Address::from_str(nft_address).expect("REASON");
-
+    let Ok(token_addr) = Address::from_str(nft_address) else {
+        return format!("Invalid NFT contract address format: {}", nft_address);
+    };
 
     let wallet = provider.get_code_at(token_addr).await;
 
-    if !wallet.expect("REASONS").is_empty(){
+    if matches!(wallet, Ok(ref code) if !code.is_empty()) {
+        let (is_721, is_1155) = tokio::join!(
+            is_erc721_nft_contract(&provider, token_addr),
+            is_erc1155_nft_contract(&provider, token_addr)
+        );
 
-        if is_erc721_nft_contract(&provider, token_addr).await{
+        if is_721 || is_1155 {
+            let standard_str = if is_721 { "ERC721" } else { "ERC1155" };
+            let erc721 = IERC721::new(token_addr, provider.clone());
 
-            let erc721 = IERC721::new(token_addr,provider.clone());
-            let name = erc721.name().call().await;
-            let symbol = erc721.symbol().call().await;
-            let totalsupply = erc721.totalSupply().call().await;
+            let call_name = erc721.name();
+            let call_symbol = erc721.symbol();
+            let call_supply = erc721.totalSupply();
 
-            format!("The ERC721 NFT name is {:#?} with name 
-            {:#?} have a total supply of {:#?} on Avax Testnet",symbol, name,totalsupply )
+            let (name_res, symbol_res, supply_res) = tokio::join!(
+                call_name.call(),
+                call_symbol.call(),
+                call_supply.call()
+            );
 
-        }else if is_erc1155_nft_contract(&provider, token_addr).await{
+            let name = name_res.ok();
+            let symbol = symbol_res.ok();
+            let totalsupply = supply_res
+                .map(|s| s.to_string())
+                .unwrap_or_else(|_| "N/A".to_string());
 
-             let erc721 = IERC721::new(token_addr,provider.clone());
-            let name = erc721.name().call().await;
-            let symbol = erc721.symbol().call().await;
-            let totalsupply = erc721.totalSupply().call().await;
-
-            format!("The ERC1155 NFT name is {:#?} with name 
-            {:#?} have a total supply of {:#?} on Avax Testnet",symbol, name,totalsupply)
-
-        }else{
-            format!("The contract address {} isn't a standard NFT", nft_address)
+            format!(
+                "The {} NFT symbol {:?} with name {:?} has a total supply of {} on {}",
+                standard_str, symbol, name, totalsupply, chain_name
+            )
+        } else {
+            format!("The contract address {} isn't a standard NFT on {}", nft_address, chain_name)
         }
-
-        
-
-
-    }else{
-
-        format!("The address {}, is a Wallet address",nft_address)
-
-
+    } else {
+        format!("The address {}, is a Wallet address", nft_address)
     }
-    
-
 }
 
+pub async fn get_nft_details_mainnet(nft_address: &str) -> String {
+    let provider = init_mainnet_provider().await;
+    let (chain_name, _symbol) = get_active_mainnet_info();
 
-
-pub async fn get_nft_details_mainnet(nft_address:&str)-> String  {
-
-    let provider = init_mantle_provider().await;  
-
-    let token_addr = Address::from_str(nft_address).expect("REASON");
+    let Ok(token_addr) = Address::from_str(nft_address) else {
+        return format!("Invalid NFT contract address format: {}", nft_address);
+    };
 
     let wallet = provider.get_code_at(token_addr).await;
 
-    if !wallet.expect("REASONS").is_empty(){
+    if matches!(wallet, Ok(ref code) if !code.is_empty()) {
+        let (is_721, is_1155) = tokio::join!(
+            is_erc721_nft_contract(&provider, token_addr),
+            is_erc1155_nft_contract(&provider, token_addr)
+        );
 
-        if is_erc721_nft_contract(&provider, token_addr).await{
+        if is_721 || is_1155 {
+            let standard_str = if is_721 { "ERC721" } else { "ERC1155" };
+            let erc721 = IERC721::new(token_addr, provider.clone());
 
-            let erc721 = IERC721::new(token_addr,provider.clone());
-            let name = erc721.name().call().await;
-            let symbol = erc721.symbol().call().await;
-            let totalsupply = erc721.totalSupply().call().await;
+            let call_name = erc721.name();
+            let call_symbol = erc721.symbol();
+            let call_supply = erc721.totalSupply();
 
-            format!("The ERC721 NFT name is {:#?} with name 
-            {:#?} have a total supply of {:#?} on Avax Testnet",symbol, name,totalsupply )
+            let (name_res, symbol_res, supply_res) = tokio::join!(
+                call_name.call(),
+                call_symbol.call(),
+                call_supply.call()
+            );
 
-        }else if is_erc1155_nft_contract(&provider, token_addr).await{
+            let name = name_res.ok();
+            let symbol = symbol_res.ok();
+            let totalsupply = supply_res
+                .map(|s| s.to_string())
+                .unwrap_or_else(|_| "N/A".to_string());
 
-            let erc721 = IERC721::new(token_addr,provider.clone());
-            let name = erc721.name().call().await;
-            let symbol = erc721.symbol().call().await;
-            let totalsupply = erc721.totalSupply().call().await;
-
-            format!("The ERC1155 NFT name is {:#?} with name 
-            {:#?} have a total supply of {:#?} on Avax Testnet",symbol, name,totalsupply )
-
-        }else{
-            format!("The address isn't a standard NFT contract")
+            format!(
+                "The {} NFT symbol {:?} with name {:?} has a total supply of {} on {}",
+                standard_str, symbol, name, totalsupply, chain_name
+            )
+        } else {
+            format!("The contract address {} isn't a standard NFT contract on {}", nft_address, chain_name)
         }
-
-
-
-
-
-    }else{
-
-        format!("The address {}, is a Wallet address",nft_address)
-
-
+    } else {
+        format!("The address {}, is a Wallet address", nft_address)
     }
-    
-
 }
 
+pub async fn get_nft_balance_testnet(nft_address: &str, wallet_address: &str) -> String {
+    let provider = init_testnet_provider().await;
+    let (chain_name, _symbol) = get_active_testnet_info();
 
-
-
-pub async fn get_nft_balance_testnet(nft_address:&str, wallet_address: &str)-> String  {
-
-    let provider = init_mantle_provider().await; 
-
-    let token_addr = Address::from_str(nft_address).expect("REASON");
-    let wallet_addr = Address::from_str(wallet_address).expect("REASON");
+    let Ok(token_addr) = Address::from_str(nft_address) else {
+        return format!("Invalid NFT contract address format: {}", nft_address);
+    };
+    let Ok(wallet_addr) = Address::from_str(wallet_address) else {
+        return format!("Invalid wallet address format: {}", wallet_address);
+    };
 
     let wallet = provider.get_code_at(token_addr).await;
 
-    if !wallet.expect("REASONS").is_empty(){
-
+    if matches!(wallet, Ok(ref code) if !code.is_empty()) {
         let verify_wallet = provider.get_code_at(wallet_addr).await;
 
-        if verify_wallet.expect("REASONS").is_empty(){
+        if matches!(verify_wallet, Ok(ref code) if code.is_empty()) {
+            let (is_721, is_1155) = tokio::join!(
+                is_erc721_nft_contract(&provider, token_addr),
+                is_erc1155_nft_contract(&provider, token_addr)
+            );
 
-             if is_erc721_nft_contract(&provider, token_addr).await{
+            if is_721 || is_1155 {
+                let standard_str = if is_721 { "ERC721" } else { "ERC1155" };
+                let erc721 = IERC721::new(token_addr, provider.clone());
 
-                let erc721 = IERC721::new(token_addr,provider.clone());
+                let call_name = erc721.name();
+                let call_symbol = erc721.symbol();
+                let call_balance = erc721.balanceOf(wallet_addr);
 
-                let name = erc721.name().call().await;
-                let symbol = erc721.symbol().call().await;
-                let balance = erc721.balanceOf(wallet_addr).call().await;
+                let (name_res, symbol_res, balance_res) = tokio::join!(
+                    call_name.call(),
+                    call_symbol.call(),
+                    call_balance.call()
+                );
 
-                format!("The wallet {:#?} has an ERC721 NFT balance of {:#?}
-                in {:#?}{:#?} for Avax Testnet",wallet_addr,balance,name,symbol)
+                let name = name_res.ok();
+                let symbol = symbol_res.ok();
+                let balance = balance_res
+                    .map(|b| b.to_string())
+                    .unwrap_or_else(|_| "0".to_string());
 
-             }else if is_erc1155_nft_contract(&provider, token_addr).await{
-
-                let erc721 = IERC721::new(token_addr,provider.clone());
-
-                let name = erc721.name().call().await;
-                let symbol = erc721.symbol().call().await;
-                let balance = erc721.balanceOf(wallet_addr).call().await;
-
-                format!("The wallet {:#?} has an ERC1155 NFT balance of {:#?}
-                in {:#?}{:#?} for Avax Testnet",wallet_addr,balance,name,symbol)
-
-
-             }else{
-                format!("The address {} isn't a standard NFT",nft_address)
-             }
-            
-
-        }else{
-            format!("The address {}, is not a wallet address",nft_address)
-
-        }     
-    }else{
-        format!("The address {}, is a Wallet address",nft_address)
-
+                format!(
+                    "The wallet {:?} has an {} NFT balance of {} in {:?} ({:?}) on {}",
+                    wallet_addr, standard_str, balance, name, symbol, chain_name
+                )
+            } else {
+                format!("The address {} isn't a standard NFT on {}", nft_address, chain_name)
+            }
+        } else {
+            format!("The address {}, is not a wallet address", wallet_address)
+        }
+    } else {
+        format!("The address {}, is a Wallet address", nft_address)
     }
-
 }
 
+pub async fn get_nft_balance_mainnet(nft_address: &str, wallet_address: &str) -> String {
+    let provider = init_mainnet_provider().await;
+    let (chain_name, _symbol) = get_active_mainnet_info();
 
-
-pub async fn get_nft_balance_mainnet(nft_address:&str, wallet_address: &str) -> String {
-
-    let provider = init_mantle_provider().await; 
-
-    let token_addr = Address::from_str(nft_address).expect("REASON");
-    let wallet_addr = Address::from_str(wallet_address).expect("REASON");
+    let Ok(token_addr) = Address::from_str(nft_address) else {
+        return format!("Invalid NFT contract address format: {}", nft_address);
+    };
+    let Ok(wallet_addr) = Address::from_str(wallet_address) else {
+        return format!("Invalid wallet address format: {}", wallet_address);
+    };
 
     let wallet = provider.get_code_at(token_addr).await;
 
-    if !wallet.expect("REASONS").is_empty(){
-        
+    if matches!(wallet, Ok(ref code) if !code.is_empty()) {
         let verify_wallet = provider.get_code_at(wallet_addr).await;
 
-        if verify_wallet.expect("REASONS").is_empty(){
-            if is_erc721_nft_contract(&provider, token_addr).await{
+        if matches!(verify_wallet, Ok(ref code) if code.is_empty()) {
+            let (is_721, is_1155) = tokio::join!(
+                is_erc721_nft_contract(&provider, token_addr),
+                is_erc1155_nft_contract(&provider, token_addr)
+            );
 
-                let erc721 = IERC721::new(token_addr,provider.clone());
+            if is_721 || is_1155 {
+                let standard_str = if is_721 { "ERC721" } else { "ERC1155" };
+                let erc721 = IERC721::new(token_addr, provider.clone());
 
-                let name = erc721.name().call().await;
-                let symbol = erc721.symbol().call().await;
-                let balance = erc721.balanceOf(wallet_addr).call().await;
+                let call_name = erc721.name();
+                let call_symbol = erc721.symbol();
+                let call_balance = erc721.balanceOf(wallet_addr);
 
-                format!("The wallet {:#?} has an ERC721 NFT balance of {:#?}
-                in {:#?}{:#?} for Avax Mainnet",wallet_addr,balance,name,symbol)
+                let (name_res, symbol_res, balance_res) = tokio::join!(
+                    call_name.call(),
+                    call_symbol.call(),
+                    call_balance.call()
+                );
 
-             }else if is_erc1155_nft_contract(&provider, token_addr).await{
+                let name = name_res.ok();
+                let symbol = symbol_res.ok();
+                let balance = balance_res
+                    .map(|b| b.to_string())
+                    .unwrap_or_else(|_| "0".to_string());
 
-                let erc721 = IERC721::new(token_addr,provider.clone());
-
-                let name = erc721.name().call().await;
-                let symbol = erc721.symbol().call().await;
-                let balance = erc721.balanceOf(wallet_addr).call().await;
-
-                format!("The wallet {:#?} has an ERC1155 NFT balance of {:#?}
-                in {:#?}{:#?} for Avax Mainnet",wallet_addr,balance,name,symbol)
-
-
-             }else{
-                format!("The address {} isn't a standard NFT on Avax",nft_address)
-             }
-            
-        }else{
-
-            format!("The address {}, is not a wallet address",nft_address)
-
+                format!(
+                    "The wallet {:?} has an {} NFT balance of {} in {:?} ({:?}) on {}",
+                    wallet_addr, standard_str, balance, name, symbol, chain_name
+                )
+            } else {
+                format!("The address {} isn't a standard NFT on {}", nft_address, chain_name)
+            }
+        } else {
+            format!("The address {}, is not a wallet address", wallet_address)
         }
-    }else{
-
-         format!("The address {}, is a Wallet address",nft_address)
+    } else {
+        format!("The address {}, is a Wallet address", nft_address)
     }
-
 }

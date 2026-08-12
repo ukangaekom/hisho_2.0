@@ -24,14 +24,15 @@ pub static TOOLS: Lazy<HashMap<&'static str, AsyncFn>> = Lazy::new(||{
     m.insert("get_nft_balance_mainnet", Arc::new(|args| Box::pin(get_nft_balance_mainnet_wrapper(args))));
     m.insert("get_nft_details_mainnet", Arc::new(|args| Box::pin(get_nft_details_mainnet_wrapper(args))));
     m.insert("get_nft_total_supply_mainnet", Arc::new(|args| Box::pin(get_nft_total_supply_mainnet_wrapper(args))));
+    m.insert("switch_chain", Arc::new(|args| Box::pin(switch_chain_wrapper(args))));
 
 
 
     // AAVE TOOL Mappings
-    m.insert("aave_wrapped_token_get_wrappedethaddress_token", Arc::new(|args| Box::pin(aave::aave_wrapped_token_get_wrappedethaddress_token(args[0]))));
-    m.insert("aave_wrapped_token_get_weth_address", Arc::new(|args| Box::pin(aave::aave_wrapped_token_get_weth_address(args[0]))));
-    m.insert("aave_wrapped_token_get_pool_address", Arc::new(|args| Box::pin(aave::aave_wrapped_token_get_pool_address(args[0]))));
-    m.insert("aave_wrapped_token_get_owner", Arc::new(|args| Box::pin(aave::aave_wrapped_token_get_owner(args[0]))));
+    m.insert("aave_wrapped_token_get_wrappedethaddress_token", Arc::new(|args| Box::pin(lending::aave::aave_wrapped_token_get_wrappedethaddress_token(args[0]))));
+    m.insert("aave_wrapped_token_get_weth_address", Arc::new(|args| Box::pin(lending::aave::aave_wrapped_token_get_weth_address(args[0]))));
+    m.insert("aave_wrapped_token_get_pool_address", Arc::new(|args| Box::pin(lending::aave::aave_wrapped_token_get_pool_address(args[0]))));
+    m.insert("aave_wrapped_token_get_owner", Arc::new(|args| Box::pin(lending::aave::aave_wrapped_token_get_owner(args[0]))));
 
     m
 });

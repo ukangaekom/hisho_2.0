@@ -52,13 +52,33 @@ pub fn get_bitcoin_wallet_address(_mnemonic: &SecureMnemonic) -> Result<String, 
 }
 
 #[allow(dead_code)]
-pub fn get_evm_wallet_address(_mnemonic: &SecureMnemonic) -> Result<String, String> {
-    // Stub for EVM wallet address derivation
-    Err("EVM wallet derivation not implemented yet".to_string())
+pub fn get_evm_wallet_address(mnemonic: &SecureMnemonic) -> Result<String, String> {
+    use ethers::signers::{coins_bip39::English, MnemonicBuilder, Signer};
+
+    let wallet = MnemonicBuilder::<English>::default()
+        .phrase(mnemonic.phrase())
+        .build()
+        .map_err(|e| format!("Failed to derive EVM wallet address: {}", e))?;
+
+    Ok(format!("{:#x}", wallet.address()))
 }
 
 #[allow(dead_code)]
 pub fn get_solana_wallet_address(_mnemonic: &SecureMnemonic) -> Result<String, String> {
     // Stub for Solana wallet derivation
     Err("Solana wallet derivation not implemented yet".to_string())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_get_evm_wallet_address() {
+        let test_phrase = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about".to_string();
+        let mnemonic = SecureMnemonic::from_phrase(test_phrase).expect("Valid mnemonic");
+        let address = get_evm_wallet_address(&mnemonic).expect("Derivation success");
+
+        assert_eq!(address.to_lowercase(), "0x9858effd232b4033e47d90003d41ec34ecaeda94");
+    }
 }

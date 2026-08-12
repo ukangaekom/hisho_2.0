@@ -62,6 +62,18 @@ fn render_card(title: &str, subtitle: &str) {
 pub fn ensure_configured() -> Result<AppSettings, String> {
     if let Ok(Some(existing_settings)) = storage::load_app_settings() {
         if storage::has_wallet() {
+            if let Some(ref key) = existing_settings.gemini_api_key {
+                unsafe {
+                    std::env::set_var("GEMINI_API_KEY", key);
+                }
+            } else if let Ok(env_key) = std::env::var("GEMINI_API_KEY") {
+                let mut updated = existing_settings.clone();
+                updated.gemini_api_key = Some(env_key.clone());
+                unsafe {
+                    std::env::set_var("GEMINI_API_KEY", env_key);
+                }
+                let _ = storage::save_app_settings(&updated);
+            }
             return Ok(existing_settings);
         }
     }
@@ -150,9 +162,13 @@ pub fn ensure_configured() -> Result<AppSettings, String> {
     let gemini_key = Text::new("Enter Gemini API Key (press Enter to skip):")
         .prompt()
         .ok()
-        .filter(|s| !s.trim().is_empty());
+        .filter(|s| !s.trim().is_empty())
+        .or_else(|| std::env::var("GEMINI_API_KEY").ok());
 
-    if gemini_key.is_some() {
+    if let Some(ref key) = gemini_key {
+        unsafe {
+            std::env::set_var("GEMINI_API_KEY", key);
+        }
         println!("   {} Gemini API Key stored.", "✔".truecolor(0, 255, 136).bold());
     } else {
         println!(

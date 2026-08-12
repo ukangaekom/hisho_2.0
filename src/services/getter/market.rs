@@ -1,65 +1,57 @@
 use std::collections::HashMap;
-use serde_json::{Value};
+use serde_json::Value;
 use std::fmt::Write;
 
-
-
-
-pub async fn get_price(_price:&str) -> String {
-    let response = reqwest::Client::new()
-        .get("https://min-api.cryptocompare.com/data/price")
-        .query(&[("fsym", _price), ("tsyms", "USD")])
-        .header("accept", "application/json").send()
-        .await.ok().expect("REASON");// Uses ? operator for error propagation
+pub async fn get_price(_price: &str) -> String {
+    let url = format!("https://min-api.cryptocompare.com/data/price?fsym={}&tsyms=USD", _price);
+    let response = match reqwest::get(&url).await {
+        Ok(resp) => resp,
+        Err(_) => return format!("Failed to reach price service for {}", _price),
+    };
 
     let mut report = String::new();
-    let _prices: String = match response.json::<HashMap<String,f64>>().await{
-            
-
-            Ok(num) => {
-
-                
-                
-                write!(&mut report, "The price of {} is ${}", _price,num["USD"]).unwrap();
-                // format!("The price of {} is ${}",_price,num["USD"])
-                return report
-            
-            },
-            Err(_) => {
-                // format!("The price of {_price} is not supported yet")
-
+    match response.json::<HashMap<String, f64>>().await {
+        Ok(num) => {
+            if let Some(price_usd) = num.get("USD") {
+                write!(&mut report, "The price of {} is ${}", _price, price_usd).unwrap();
+            } else {
                 write!(&mut report, "The price of {} is not supported yet", _price).unwrap();
-
-                return report
             }
-        };
-
+            report
+        }
+        Err(_) => {
+            write!(&mut report, "The price of {} is not supported yet", _price).unwrap();
+            report
+        }
+    }
 }
 
+pub async fn get_marketcap(coin: &str) -> String {
+    let token = format!("https://min-api.cryptocompare.com/data/pricemultifull?fsyms={}&tsyms=USD", coin);
+    let response = match reqwest::get(&token).await {
+        Ok(resp) => resp,
+        Err(_) => return format!("Error fetching market data for {}", coin),
+    };
 
+    let market_cap: Value = match response.json().await {
+        Ok(v) => v,
+        Err(_) => return "Error parsing market data JSON.".to_string(),
+    };
 
-
-
-pub async fn get_marketcap(coin:&str) -> String {
-    let token = format!("https://min-api.cryptocompare.com/data/pricemultifull?fsyms={}&tsyms=USD",coin);  
-    
-    
-    let response = reqwest::get(&token).await.expect("REASON"); 
-    let market_cap : Value =  response.json().await.ok().expect("REASON");
     let mut report = String::new();
     if market_cap.get("DISPLAY").is_some() {
-        let json_response = format!("{}",&market_cap.get("DISPLAY")
-        .expect("REASON").get(&coin)
-        .expect("REASON").get("USD").expect("REASON")
-        .get("MKTCAP").unwrap()
-        .as_str().unwrap());
-
-        write!(&mut report, "The market capitalization of {} is {}",coin,json_response).unwrap();
-
-        return report;
-    }else{
-        write!(&mut report,"Error fetching data!").unwrap();
-        return report;
+        if let Some(mktcap) = market_cap
+            .get("DISPLAY")
+            .and_then(|d| d.get(coin))
+            .and_then(|c| c.get("USD"))
+            .and_then(|u| u.get("MKTCAP"))
+            .and_then(|m| m.as_str())
+        {
+            write!(&mut report, "The market capitalization of {} is {}", coin, mktcap).unwrap();
+            return report;
+        }
     }
 
+    write!(&mut report, "Error fetching data!").unwrap();
+    report
 }

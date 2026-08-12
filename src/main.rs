@@ -7,6 +7,7 @@ use crate::chat::chat::start;
 use clap::{Parser, Subcommand};
 use colored::*; // For colored output
 use figlet_rs::FIGfont;
+mod database;
 mod settings;
 
 #[derive(Parser)]
@@ -98,6 +99,9 @@ async fn main() {
             .white()
             .bold()
     );
+
+    // Dynamic runtime ingestion of token.json into redb embedded storage
+    let _ = database::chain_data::ensure_tokens_ingested();
 
     println!(
         " {}\n",
