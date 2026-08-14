@@ -561,6 +561,49 @@
                     "symbol": "OKB"
                 }
             }
+        },
+        {
+            "name": "Moonriver",
+            "mainnet": {
+                "chain_id": 1285,
+                "rpc_url": "https://rpc.api.moonriver.moonbeam.network",
+                "native_token": {
+                    "name": "Moonriver",
+                    "symbol": "MOVR"
+                }
+            },
+            "testnet": {
+                "label": "Moonbase Alpha Testnet",
+                "chain_id": 1287,
+                "rpc_url": "https://api-moonbase-alpha.n.dwellir.com/6209c6bf-2e2a-4078-995c-b7407410820b",
+                "native_token": {
+                    "name": "Development",
+                    "symbol": "DEV"
+                },
+                "note": "No dedicated Moonriver testnet; Moonbase Alpha (chain 1287) is used for pre-deployment testing across the Moonbeam ecosystem."
+            }
+        },
+        {
+            "name": "Arc",
+            "mainnet": {
+                "chain_id": 0,
+                "rpc_url": "https://rpc.mainnet.arc.io",
+                "native_token": {
+                    "name": "USD Coin",
+                    "symbol": "USDC"
+                },
+                "note": "Circle's Arc is EVM-compatible and currently in public testnet. Mainnet (beta) parameters, including the official chain ID and RPC endpoints, had not been published by Circle as of this writing (mid-2026) \u2014 verify at docs.arc.io before use."
+            },
+            "testnet": {
+                "label": "Arc Testnet",
+                "chain_id": 5042002,
+                "rpc_url": "https://rpc.testnet.arc.io",
+                "native_token": {
+                    "name": "USD Coin",
+                    "symbol": "USDC"
+                },
+                "note": "USDC is used as the native gas token, not a separate testnet asset."
+            }
         }
     ]
 }

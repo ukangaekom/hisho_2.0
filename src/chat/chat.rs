@@ -1,26 +1,21 @@
 use colored::*;
 use std::io::{self, Write};
 
-use crate::agents::*;
 use crate::chat::ui::{
-    render_command_help, render_quick_guide, render_reasoning_card, render_report_card,
-    render_session_header, render_user_prompt, AnimatedSpinner,
+    get_chain_identifiers, render_command_help, render_quick_guide, render_reasoning_card,
+    render_report_card, render_session_header, render_user_prompt, AnimatedSpinner,
 };
-use crate::settings::config::AppSettings;
+use crate::settings::config::get_public_wallet_address;
+use hisho::tools::tools_map::TOOLS;
+use hisho::tools::utils::{destructor_task, extract_tool_params};
 
 pub async fn start() {
-    // Load active network setting if available
-    let active_network = AppSettings::fetch()
-        .ok()
-        .flatten()
-        .map(|s| s.default_chain.name)
-        .unwrap_or_else(|| "Mantle Sepolia".to_string());
-
     // Clear screen and render initial session HUD header
     print!("{esc}[2J{esc}[1;1H", esc = 27 as char);
     let _ = io::stdout().flush();
 
-    render_session_header(&active_network);
+    let (mainnet_info, testnet_info) = get_chain_identifiers();
+    render_session_header(&mainnet_info, &testnet_info);
     render_quick_guide();
 
     let mut input = String::new();
@@ -64,17 +59,57 @@ pub async fn start() {
                 "/clear" => {
                     print!("{esc}[2J{esc}[1;1H", esc = 27 as char);
                     let _ = io::stdout().flush();
-                    render_session_header(&active_network);
+                    let (cur_main, cur_test) = get_chain_identifiers();
+                    render_session_header(&cur_main, &cur_test);
                     render_quick_guide();
                     continue;
                 }
                 "/status" | "/wallet" => {
-                    println!("\n{}", "╭── 🛡️ ZEROIZED FINANCIAL VAULT STATUS ─────────────────────────╮".truecolor(0, 255, 170));
-                    println!("│ {:<62} │", format!("Active Network : {}", active_network).bright_green().bold());
-                    println!("│ {:<62} │", "Keyring Vault  : 🔒 AES-256-GCM (Argon2id Encrypted)".truecolor(255, 215, 0));
-                    println!("│ {:<62} │", "Memory Policy  : 🛡️ ZeroizeOnDrop Heap Protection Active".bright_white());
-                    println!("│ {:<62} │", "AI Engine      : ⚡ Gemini 2.5 Multi-Agent Orchestrator".truecolor(0, 225, 255));
-                    println!("{}\n", "╰────────────────────────────────────────────────────────────────╯".truecolor(0, 255, 170));
+                    let (cur_main, cur_test) = get_chain_identifiers();
+                    let wallet_addr = get_public_wallet_address();
+                    println!(
+                        "\n{}",
+                        "╭── 🛡️ ZEROIZED FINANCIAL VAULT STATUS ─────────────────────────╮"
+                            .truecolor(0, 255, 170)
+                    );
+                    println!(
+                        "│ {:<62} │",
+                        format!("Active Mainnet : {}", cur_main)
+                            .bright_green()
+                            .bold()
+                    );
+                    println!(
+                        "│ {:<62} │",
+                        format!("Active Testnet : {}", cur_test)
+                            .truecolor(0, 225, 255)
+                            .bold()
+                    );
+                    println!(
+                        "│ {:<62} │",
+                        format!("Wallet Address : {}", wallet_addr)
+                            .bright_yellow()
+                            .bold()
+                    );
+                    println!(
+                        "│ {:<62} │",
+                        "Keyring Vault  : 🔒 AES-256-GCM (Argon2id Encrypted)"
+                            .truecolor(255, 215, 0)
+                    );
+                    println!(
+                        "│ {:<62} │",
+                        "Memory Policy  : 🛡️ ZeroizeOnDrop Heap Protection Active"
+                            .bright_white()
+                    );
+                    println!(
+                        "│ {:<62} │",
+                        "AI Engine      : ⚡ Gemini 2.5 Multi-Agent Orchestrator"
+                            .truecolor(0, 225, 255)
+                    );
+                    println!(
+                        "{}\n",
+                        "╰────────────────────────────────────────────────────────────────╯"
+                            .truecolor(0, 255, 170)
+                    );
                     continue;
                 }
                 _ => {
@@ -104,7 +139,7 @@ pub async fn start() {
 
         // 2. Stage 1: Tactical Reasoning Engine
         let spinner = AnimatedSpinner::start("⚡ COMPUTING ON-CHAIN REASONING");
-        let reasoning_res = processing_agent::process(text).await;
+        let reasoning_res = crate::agents::processing_agent::process(text).await;
         spinner.stop().await;
 
         let reasoning_text = match reasoning_res {
@@ -114,9 +149,38 @@ pub async fn start() {
 
         render_reasoning_card(&reasoning_text);
 
-        // 3. Stage 2: Financial Action & Report Synthesis
+        // 3. Stage 2: Destructor Task & Tool Execution
+        let agent_tasks = destructor_task(&reasoning_text);
+        let mut tool_execution_outputs: Vec<String> = Vec::new();
+
+        for task_str in agent_tasks {
+            if let Some((tool_name, parameters)) = extract_tool_params(&task_str) {
+                let params_ref: Vec<&str> = parameters.iter().map(|s| s.as_str()).collect();
+                if let Some(tool_func) = TOOLS.get(tool_name.as_str()) {
+                    let spinner = AnimatedSpinner::start("⚡ EXECUTING TOOL ACTION");
+                    let result = tool_func(&params_ref).await;
+                    spinner.stop().await;
+                    tool_execution_outputs.push(format!("Tool [{}] Output: {}", tool_name, result));
+                } else {
+                    tool_execution_outputs.push(format!("Tool [{}] not found in tool registry.", tool_name));
+                }
+            }
+        }
+
+        // 4. Stage 3: Financial Action & Report Synthesis
+        let report_input = if !tool_execution_outputs.is_empty() {
+            format!(
+                "User Query: {}\nTactical Reasoning: {}\nTool Execution Results:\n{}",
+                text,
+                reasoning_text,
+                tool_execution_outputs.join("\n")
+            )
+        } else {
+            reasoning_text.clone()
+        };
+
         let spinner = AnimatedSpinner::start("📊 SYNTHESIZING FINANCIAL REPORT & ACTION EXECUTION");
-        let report_res = report_agent::report_result(&reasoning_text).await;
+        let report_res = crate::agents::report_agent::report_result(&report_input).await;
         spinner.stop().await;
 
         let report_text = match report_res {

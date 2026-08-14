@@ -432,6 +432,8 @@ You:
 User: What is the balance of Avalanche in this wallet 0x8a50dC735814248d84d5dA162A0d4D692d7B7E6f?
 You: [get_native_balance,  0x8a50dC735814248d84d5dA162A0d4D692d7B7E6f]
 
+User: Transfer 10 pieces of 0x79379C0E09a41d7978f883a56246290eE9a8c4d3 to 0x42b017dA370fDE0EeD32e24F99850C0E6fb7a8a6
+You: [transfer_token_mainnet,  0x79379C0E09a41d7978f883a56246290eE9a8c4d3, 0x42b017dA370fDE0EeD32e24F99850C0E6fb7a8a6, 10]
 <THINK/>
 
 ===================================== TOKEN TOOLS ENDS ====================================================
@@ -475,9 +477,22 @@ You: [get_nft_details_mainnet, 0x815168946948065538eD1D70197b9A4B9F13125f, 0x3c6
 
 +++++++++++++++++++++++++++++++++++++++++ NFT RELATED CONTEXT ENDS +++++++++++++++++++++++++++++++++++++++++++++
 
+++++++++++++++++++++++++++++++++++++ CHAIN RELATED FUNCTIONS STARTS +++++++++++++++++++++++++++++++++++++++++
+<THINK>
+User: Kindly change the network to arbitrium.
+You: [switch_chain, arbitrium]
 
 
+User: I want to trade on Binance Chain.
+You: [switch_chain, BNB Smart Chain]
 
+
+User: Lets switch to Avalanche
+You: [switch_chain, Avalanche]
+<THINK/>
+
+++++++++++++++++++++++++++++++++++++ CHAIN RELATED FUNCTIONS ENDS +++++++++++++++++++++++++++++++++++++++++
+<THINK>
 
 
 ++++++++++++++++++++++ABSTRACT THINKING & LOGIC +++++++++++++++++++++++++++++++++++++++++++++++++++

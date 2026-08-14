@@ -4,10 +4,30 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use tokio::time::{sleep, Duration};
 
+/// Helper to dynamically fetch current active Mainnet and Testnet identifiers with Chain IDs
+pub fn get_chain_identifiers() -> (String, String) {
+    if let Ok(Some(settings)) = crate::settings::config::AppSettings::fetch() {
+        let chain = settings.default_chain;
+        let mainnet_info = format!("{} (ID: {})", chain.name, chain.mainnet.chain_id);
+        let testnet_name = chain
+            .testnet
+            .label
+            .clone()
+            .unwrap_or_else(|| format!("{} Testnet", chain.name));
+        let testnet_info = format!("{} (ID: {})", testnet_name, chain.testnet.chain_id);
+        (mainnet_info, testnet_info)
+    } else {
+        (
+            "Ethereum (ID: 1)".to_string(),
+            "Sepolia (ID: 11155111)".to_string(),
+        )
+    }
+}
+
 /// Renders a premium financial agent HUD header at the top of the terminal session
-pub fn render_session_header(active_network: &str) {
+pub fn render_session_header(mainnet_info: &str, testnet_info: &str) {
     let (cols, _) = crossterm::terminal::size().unwrap_or((100, 30));
-    let width = (cols as usize).min(92);
+    let width = (cols as usize).min(96);
     let inner_width = width.saturating_sub(4);
 
     let border_line = "─".repeat(inner_width);
@@ -24,12 +44,12 @@ pub fn render_session_header(active_network: &str) {
         width = inner_width
     );
     println!("{}", format!("├─{}─┤", border_line).truecolor(0, 255, 136));
-    
+
     let status_line = format!(
-        "NET: {}  │  VAULT: {}  │  STATUS: {}",
-        active_network.bright_green().bold(),
-        "🔒 AES-256-GCM (ARGON2ID)".truecolor(255, 215, 0),
-        "🟢 ONLINE".truecolor(0, 225, 255).bold()
+        "MAINNET: {}  │  TESTNET: {}  │  STATUS: {}",
+        mainnet_info.bright_green().bold(),
+        testnet_info.truecolor(0, 225, 255).bold(),
+        "🟢 ONLINE".truecolor(0, 255, 136).bold()
     );
     println!("│  {:<width$}  │", status_line, width = inner_width);
     println!("{}\n", format!("└─{}─┘", border_line).truecolor(0, 255, 136));
@@ -117,13 +137,36 @@ pub fn render_report_card(report: &str) {
 
 /// Renders an interactive slash command directory table
 pub fn render_command_help() {
-    println!("\n{}", "╭── 📜 HISHO COMMAND DIRECTORY ─────────────────────────────────╮".truecolor(0, 225, 255));
-    println!("│  {:<62} │", "/help     - Display this command directory".bright_white());
-    println!("│  {:<62} │", "/status   - Show financial wallet & zeroized key status".bright_white());
-    println!("│  {:<62} │", "/wallet   - View active wallet state & OS keyring health".bright_white());
-    println!("│  {:<62} │", "/clear    - Clear console screen & refresh HUD".bright_white());
-    println!("│  {:<62} │", "/exit     - Safely lock vault & exit session".bright_white());
-    println!("{}\n", "╰────────────────────────────────────────────────────────────────╯".truecolor(0, 225, 255));
+    println!(
+        "\n{}",
+        "╭── 📜 HISHO COMMAND DIRECTORY ─────────────────────────────────╮"
+            .truecolor(0, 225, 255)
+    );
+    println!(
+        "│  {:<62} │",
+        "/help     - Display this command directory".bright_white()
+    );
+    println!(
+        "│  {:<62} │",
+        "/status   - Show financial wallet & zeroized key status".bright_white()
+    );
+    println!(
+        "│  {:<62} │",
+        "/wallet   - View active wallet state & OS keyring health".bright_white()
+    );
+    println!(
+        "│  {:<62} │",
+        "/clear    - Clear console screen & refresh HUD".bright_white()
+    );
+    println!(
+        "│  {:<62} │",
+        "/exit     - Safely lock vault & exit session".bright_white()
+    );
+    println!(
+        "{}\n",
+        "╰────────────────────────────────────────────────────────────────╯"
+            .truecolor(0, 255, 170)
+    );
 }
 
 /// High-tech animated terminal spinner for async tasks

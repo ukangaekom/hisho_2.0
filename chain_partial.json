@@ -9,18 +9,20 @@
 //         }
 //     },
 //     "testnet": {
-//         "label": null,
-//         "chain_id": null,
-//         "rpc_url": null,
-//         "native_token": null,
+//         "label": "Moonbase Alpha Testnet",
+//         "chain_id": 1287,
+//         "rpc_url": https://api-moonbase-alpha.n.dwellir.com/6209c6bf-2e2a-4078-995c-b7407410820b,
+//         "native_token": {
+//              "name":"Development",
+//              "symbol":"DEV"},
 //         "note": "No dedicated Moonriver testnet; Moonbase Alpha (chain 1287) is used for pre-deployment testing across the Moonbeam ecosystem."
 //     }
 // },
 // {
 //     "name": "Arc",
 //     "mainnet": {
-//         "chain_id": null,
-//         "rpc_url": null,
+//         "chain_id": 0,
+//         "rpc_url": https://rpc.mainnet.arc.io,
 //         "native_token": {
 //             "name": "USD Coin",
 //             "symbol": "USDC"

@@ -239,6 +239,7 @@ pub fn switch_chain(query: &str) -> String {
             default_chain: matched_chain.clone(),
             custom_rpc: None,
             gemini_api_key: None,
+            wallet_address: None,
         },
     };
 

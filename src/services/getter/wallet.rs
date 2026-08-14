@@ -1,7 +1,6 @@
 use crate::connection::provider::{get_active_mainnet_info, init_rpc_provider};
-use crate::settings::{storage, wallet::get_evm_wallet_address};
+use crate::settings::{config::get_public_wallet_address, storage, wallet::get_evm_wallet_address};
 use alloy::{primitives::utils::format_units, primitives::Address, providers::Provider};
-use inquire::Password;
 use std::str::FromStr;
 
 pub async fn get_native_balance(wallet: &str) -> String {
@@ -26,22 +25,21 @@ pub async fn get_native_balance(wallet: &str) -> String {
     )
 }
 
+/// Retrieves the system's public EVM wallet address without requiring a PIN prompt.
 pub async fn get_system_wallet() -> String {
     if !storage::has_wallet() {
         return "No system wallet configured in vault. Please run setup wizard first.".to_string();
     }
 
-    let pin = match Password::new("Enter System PIN to unlock wallet:")
-        .without_confirmation()
-        .prompt()
-    {
-        Ok(p) => p,
-        Err(_) => return "System PIN prompt was cancelled or invalid.".to_string(),
-    };
-
-    get_system_wallet_with_pin(&pin)
+    let public_addr = get_public_wallet_address();
+    if public_addr.starts_with("0x") {
+        format!("System EVM Wallet Address: {}", public_addr)
+    } else {
+        "Public EVM wallet address is configured. You can derive it anytime.".to_string()
+    }
 }
 
+/// Derives and returns the EVM wallet address using a PIN.
 pub fn get_system_wallet_with_pin(pin: &str) -> String {
     if !storage::has_wallet() {
         return "No system wallet configured in vault.".to_string();

@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::settings::chain::{AppConfig, Blockchain};
 use crate::settings::storage;
-use crate::settings::wallet::SecureMnemonic;
+use crate::settings::wallet::{get_evm_wallet_address, SecureMnemonic};
 
 fn shiny_render_config() -> RenderConfig<'static> {
     let mut config = RenderConfig::default_colored();
@@ -21,6 +21,8 @@ pub struct AppSettings {
     pub default_chain: Blockchain,
     pub custom_rpc: Option<String>,
     pub gemini_api_key: Option<String>,
+    #[serde(default)]
+    pub wallet_address: Option<String>,
 }
 
 impl AppSettings {
@@ -58,10 +60,48 @@ fn render_card(title: &str, subtitle: &str) {
     println!("{}", "╰──────────────────────────────────────────────────────────────╯".truecolor(0, 225, 255));
 }
 
+/// Helper function to retrieve the configured public EVM wallet address without requiring PIN.
+pub fn get_public_wallet_address() -> String {
+    if let Ok(Some(settings)) = storage::load_app_settings() {
+        if let Some(ref addr) = settings.wallet_address {
+            if !addr.trim().is_empty() {
+                return addr.clone();
+            }
+        }
+    }
+    "No wallet address configured in system settings.".to_string()
+}
+
 /// Ensures the application is configured. Runs setup wizard if settings or wallet are missing.
 pub fn ensure_configured() -> Result<AppSettings, String> {
     if let Ok(Some(mut existing_settings)) = storage::load_app_settings() {
         if storage::has_wallet() {
+            // One-time auto-migration for existing wallets without cached public address
+            if existing_settings.wallet_address.is_none() {
+                render_banner("ONE-TIME PUBLIC WALLET ADDRESS MIGRATION");
+                println!(
+                    "{}",
+                    "ℹ Seed phrase detected in OS Keyring. Enter your System PIN once to cache your public EVM address for PIN-free viewing."
+                        .truecolor(0, 225, 255)
+                );
+                let pin_res = Password::new("Enter System PIN to cache public EVM wallet address:")
+                    .without_confirmation()
+                    .prompt();
+                if let Ok(pin) = pin_res {
+                    if let Ok(mnemonic) = storage::view_wallet_with_pin(&pin) {
+                        if let Ok(addr) = get_evm_wallet_address(&mnemonic) {
+                            existing_settings.wallet_address = Some(addr.clone());
+                            let _ = storage::save_app_settings(&existing_settings);
+                            println!(
+                                "   {} Public EVM wallet address ({}) cached successfully for PIN-free viewing.",
+                                "✔".truecolor(0, 255, 136).bold(),
+                                addr.bright_green()
+                            );
+                        }
+                    }
+                }
+            }
+
             // Check if key is already in env
             if let Ok(env_key) = std::env::var("GEMINI_API_KEY") {
                 if existing_settings.gemini_api_key.as_deref() != Some(&env_key) {
@@ -146,7 +186,7 @@ pub fn ensure_configured() -> Result<AppSettings, String> {
 
     // 2. Seed Phrase & System PIN Setup
     render_banner("STEP 2: ZEROIZED SEED PHRASE & SYSTEM PIN");
-    if !storage::has_wallet() {
+    let derived_wallet_address = if !storage::has_wallet() {
         println!(
             "{}",
             "🔒 Generating 24-word seed phrase protected inside OS Keyring..."
@@ -176,6 +216,7 @@ pub fn ensure_configured() -> Result<AppSettings, String> {
         };
 
         let mnemonic = SecureMnemonic::generate_wallet()?;
+        let addr = get_evm_wallet_address(&mnemonic).ok();
         storage::save_wallet_with_pin(&mnemonic, &pin)?;
 
         println!(
@@ -184,6 +225,7 @@ pub fn ensure_configured() -> Result<AppSettings, String> {
                 .truecolor(0, 255, 136)
                 .bold()
         );
+        addr
     } else {
         println!(
             "   {}\n",
@@ -191,7 +233,8 @@ pub fn ensure_configured() -> Result<AppSettings, String> {
                 .truecolor(0, 255, 136)
                 .bold()
         );
-    }
+        None
+    };
 
     // 3. Gemini API Key Setup
     render_banner("STEP 3: GEMINI AI ENGINE API KEY");
@@ -218,6 +261,7 @@ pub fn ensure_configured() -> Result<AppSettings, String> {
         default_chain: selected_chain,
         custom_rpc: None,
         gemini_api_key: gemini_key,
+        wallet_address: derived_wallet_address,
     };
 
     storage::save_app_settings(&settings)?;
@@ -296,6 +340,10 @@ pub fn interactive_settings_menu() -> Result<(), String> {
 
             match storage::view_wallet_with_pin(&pin) {
                 Ok(mnemonic) => {
+                    if let Ok(addr) = get_evm_wallet_address(&mnemonic) {
+                        settings.wallet_address = Some(addr);
+                        let _ = storage::save_app_settings(&settings);
+                    }
                     println!("\n{}", "╭── 🔒 CONFIDENTIAL 24-WORD SEED PHRASE ──────────────────────╮".truecolor(255, 60, 60));
                     println!(
                         "│ {:<60} │",
@@ -316,6 +364,7 @@ pub fn interactive_settings_menu() -> Result<(), String> {
             }
         } else if choice.starts_with("📊") {
             let testnet_name = settings.default_chain.testnet.label.as_deref().unwrap_or("Testnet");
+            let wallet_display = settings.wallet_address.as_deref().unwrap_or("🔒 Seed in Vault (Address Uncached)");
             
             println!("\n{}", "╭── 📊 SYSTEM STATUS & CONFIGURATION CARD ────────────────────╮".truecolor(0, 200, 255));
             println!("│ {:<60} │", format!("Active Network   : {}", settings.default_chain.name).bright_white().bold());
@@ -326,7 +375,7 @@ pub fn interactive_settings_menu() -> Result<(), String> {
             println!("│ {:<60} │", format!("Testnet RPC      : {}", settings.default_chain.testnet.rpc_url).dimmed());
             println!("{}", "├──────────────────────────────────────────────────────────────┤".truecolor(0, 200, 255));
             println!("│ {:<60} │", format!("Gemini API Key   : {}", if settings.gemini_api_key.is_some() { "● Active (Configured)" } else { "○ Not Set" }));
-            println!("│ {:<60} │", format!("Wallet Seed      : {}", if storage::has_wallet() { "🔒 Locked in OS Zeroized Keyring" } else { "❌ Missing" }));
+            println!("│ {:<60} │", format!("Wallet Address   : {}", wallet_display).bright_green());
             println!("{}", "╰──────────────────────────────────────────────────────────────╯".truecolor(0, 200, 255));
         } else if choice.starts_with("🚪") {
             println!("\nExiting settings menu.");
