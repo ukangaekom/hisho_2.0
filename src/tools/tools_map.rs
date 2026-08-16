@@ -21,10 +21,12 @@ pub static TOOLS: Lazy<HashMap<&'static str, AsyncFn>> = Lazy::new(|| {
     m.insert("get_marketcap", Arc::new(|args| Box::pin(get_marketcap_wrapper(args))));
     m.insert("get_native_balance", Arc::new(|args| Box::pin(get_native_balance_wrapper(args))));
     m.insert("get_system_wallet", Arc::new(|args| Box::pin(get_system_wallet_wrapper(args))));
+    m.insert("get_system_wallet_with_pin", Arc::new(|args| Box::pin(get_system_wallet_with_pin_wrapper(args))));
 
     // Mainnet Token & NFT Getters
     m.insert("get_token_details_mainnet", Arc::new(|args| Box::pin(get_token_details_mainnet_wrapper(args))));
     m.insert("get_token_balance_mainnet", Arc::new(|args| Box::pin(get_token_balance_mainnet_wrapper(args))));
+    m.insert("get_token_total_supply_mainnet", Arc::new(|args| Box::pin(get_token_total_supply_mainnet_wrapper(args))));
     m.insert("get_nft_balance_mainnet", Arc::new(|args| Box::pin(get_nft_balance_mainnet_wrapper(args))));
     m.insert("get_nft_details_mainnet", Arc::new(|args| Box::pin(get_nft_details_mainnet_wrapper(args))));
     m.insert("get_nft_total_supply_mainnet", Arc::new(|args| Box::pin(get_nft_total_supply_mainnet_wrapper(args))));
@@ -32,6 +34,7 @@ pub static TOOLS: Lazy<HashMap<&'static str, AsyncFn>> = Lazy::new(|| {
     // Testnet Token & NFT Getters
     m.insert("get_token_details_testnet", Arc::new(|args| Box::pin(get_token_details_testnet_wrapper(args))));
     m.insert("get_token_balance_testnet", Arc::new(|args| Box::pin(get_token_balance_testnet_wrapper(args))));
+    m.insert("get_token_total_supply_testnet", Arc::new(|args| Box::pin(get_token_total_supply_testnet_wrapper(args))));
     m.insert("get_nft_balance_testnet", Arc::new(|args| Box::pin(get_nft_balance_testnet_wrapper(args))));
     m.insert("get_nft_details_testnet", Arc::new(|args| Box::pin(get_nft_details_testnet_wrapper(args))));
     m.insert("get_nft_total_supply_testnet", Arc::new(|args| Box::pin(get_nft_total_supply_testnet_wrapper(args))));
@@ -82,6 +85,9 @@ mod tests {
     fn test_tools_map_registration() {
         assert!(TOOLS.contains_key("switch_chain"));
         assert!(TOOLS.contains_key("get_system_wallet"));
+        assert!(TOOLS.contains_key("get_system_wallet_with_pin"));
+        assert!(TOOLS.contains_key("get_token_total_supply_mainnet"));
+        assert!(TOOLS.contains_key("get_token_total_supply_testnet"));
         assert!(TOOLS.contains_key("transfer_token_mainnet"));
         assert!(TOOLS.contains_key("transfer_token_testnet"));
         assert!(TOOLS.contains_key("approve_token_mainnet"));

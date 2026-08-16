@@ -3,7 +3,7 @@ use genai::Client;
 use std::sync::Arc;
 use eyre::Error;
 
-static PROCESS_SYSTEM_CONFIGURATION: &str = include_str!("../../knowledgebase/avalanche_gpt_config.txt");
+static PROCESS_SYSTEM_CONFIGURATION: &str = include_str!("../../orchestrator/hisho.md");
 
 
 #[inline(always)]

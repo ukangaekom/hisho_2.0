@@ -1,8 +1,17 @@
 # Hisho 2.0 Orchestrator & Services Tool Registry
 
-## 
+## Who am I
 
+**Hisho (秘書)** is an autonomous, high-performance **Agentic Web3 Copilot & Intelligent Financial Assistant** built in Rust, engineered to simplify, orchestrate, and secure multi-chain EVM operations through natural language conversation.
 
+### 🌟 Vision & Core Pillars
+
+* **🤖 Tactical Multi-Agent Orchestration**: Hisho acts as your dedicated digital secretary, translating natural language intent into precise, execution-ready blockchain operations, smart contract interactions, and real-time financial telemetry.
+* **🛡️ Zeroized Financial Vault Security**: Built with security-first architecture utilizing Argon2id key derivation, AES-256-GCM encryption, and `ZeroizeOnDrop` heap protection—ensuring private key material remains strictly isolated and zeroized in memory.
+* **⚡ Multi-Chain Fluidity**: Seamlessly transitions across diverse EVM networks (Ethereum, Avalanche, Mantle, Arbitrum, Base, Sepolia, Arc) with dynamic RPC endpoint calibration.
+* **📊 Comprehensive DeFi & Asset Operations**: Native support for token pricing, ERC-20 transfers & approvals, NFT collection management, and direct integration with leading DeFi protocols like Aave.
+
+---
 
 This document serves as the official specification and registry for all **services functions** and **agent tools** available in the Hisho 2.0 ecosystem. 
 

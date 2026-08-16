@@ -33,16 +33,21 @@ pub async fn execute(message: &str) -> Result<String, String> {
 
     for task_str in agent_tasks {
         tasks.spawn(async move {
-            if let Some((tool, parameters)) = extract_tool_params(&task_str) {
-                let params: Vec<&str> = parameters.iter().map(|s| s.as_str()).collect();
-
-                if let Some(func) = TOOLS.get(tool.as_str()) {
-                    func(&params).await
-                } else {
-                    format!("Tool '{}' not found", tool)
-                }
-            } else {
+            let tool_calls = extract_tool_params(&task_str);
+            if tool_calls.is_empty() {
                 format!("Invalid task: {}", task_str)
+            } else {
+                let mut exec_outputs = Vec::new();
+                for (tool, parameters) in tool_calls {
+                    let params: Vec<&str> = parameters.iter().map(|s| s.as_str()).collect();
+
+                    if let Some(func) = TOOLS.get(tool.as_str()) {
+                        exec_outputs.push(func(&params).await);
+                    } else {
+                        exec_outputs.push(format!("Tool '{}' not found", tool));
+                    }
+                }
+                exec_outputs.join("\n")
             }
         });
     }

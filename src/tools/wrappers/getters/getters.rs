@@ -6,9 +6,9 @@ use crate::services::getter::{
     },
     token::{
         get_token_balance_mainnet, get_token_balance_testnet, get_token_details_mainnet,
-        get_token_details_testnet,
+        get_token_details_testnet, get_token_total_supply_mainnet, get_token_total_supply_testnet,
     },
-    wallet::{get_native_balance, get_system_wallet},
+    wallet::{get_native_balance, get_system_wallet, get_system_wallet_with_pin},
 };
 use futures::future::join_all;
 
@@ -66,6 +66,18 @@ pub async fn get_token_balance_testnet_wrapper(args: &[&str]) -> String {
     results.join(", ")
 }
 
+pub async fn get_token_total_supply_mainnet_wrapper(args: &[&str]) -> String {
+    let futures = args.iter().map(|&token| get_token_total_supply_mainnet(token));
+    let results: Vec<String> = join_all(futures).await;
+    results.join(", ")
+}
+
+pub async fn get_token_total_supply_testnet_wrapper(args: &[&str]) -> String {
+    let futures = args.iter().map(|&token| get_token_total_supply_testnet(token));
+    let results: Vec<String> = join_all(futures).await;
+    results.join(", ")
+}
+
 pub async fn get_native_balance_wrapper(args: &[&str]) -> String {
     let futures = args.iter().map(|&token| get_native_balance(token));
     let results: Vec<String> = join_all(futures).await;
@@ -74,6 +86,13 @@ pub async fn get_native_balance_wrapper(args: &[&str]) -> String {
 
 pub async fn get_system_wallet_wrapper(_args: &[&str]) -> String {
     get_system_wallet().await
+}
+
+pub async fn get_system_wallet_with_pin_wrapper(args: &[&str]) -> String {
+    if args.is_empty() {
+        return "Usage: get_system_wallet_with_pin <pin>".to_string();
+    }
+    get_system_wallet_with_pin(args[0])
 }
 
 // ==================== NFT ==========================================

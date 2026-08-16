@@ -154,7 +154,8 @@ pub async fn start() {
         let mut tool_execution_outputs: Vec<String> = Vec::new();
 
         for task_str in agent_tasks {
-            if let Some((tool_name, parameters)) = extract_tool_params(&task_str) {
+            let tool_calls = extract_tool_params(&task_str);
+            for (tool_name, parameters) in tool_calls {
                 let params_ref: Vec<&str> = parameters.iter().map(|s| s.as_str()).collect();
                 if let Some(tool_func) = TOOLS.get(tool_name.as_str()) {
                     let spinner = AnimatedSpinner::start("⚡ EXECUTING TOOL ACTION");

@@ -1,0 +1,625 @@
+{
+    "1": {
+        "chain_name": "Ethereum Mainnet",
+        "network_type": "mainnet",
+        "protocols": {
+            "aave_v3": {
+                "name": "Aave V3",
+                "category": "lending",
+                "contracts": {
+                    "pool": "0x87870Bca3F5f6316F486D921448eb20b28c44453",
+                    "pool_addresses_provider": "0x2f39d218133AFaB8F2B819B1066c7E434Ad94E9e",
+                    "wrapped_token_gateway": "0xD72041785646E380f629398865d1d64A49F3fA80",
+                    "oracle": "0x54586bE62E3c3580375aE3723C145253020CaCA8"
+                }
+            },
+            "uniswap_v3": {
+                "name": "Uniswap V3",
+                "category": "dexes",
+                "contracts": {
+                    "swap_router_v2": "0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45",
+                    "factory": "0x1F98431c8cD987018177450100003786221E3743",
+                    "position_manager": "0xC36442b4a4522E871399CD717aBDD847Ab11FE88"
+                }
+            },
+            "compound_v3": {
+                "name": "Compound V3",
+                "category": "lending",
+                "contracts": {
+                    "usdc_comet": "0xc3d688B66703497DAA19211EEdff47f25384cdc3",
+                    "weth_comet": "0xA17581A9E3356D9AC858745424911dE41E660fD1"
+                }
+            },
+            "curve_finance": {
+                "name": "Curve Finance",
+                "category": "dexes",
+                "contracts": {
+                    "address_provider": "0x0000000022D53366457F9d5E6858170F02A0115a",
+                    "registry": "0x90E00ACe148ca3b23Ac1bC8C240C2a7Dd9c2d7f5"
+                }
+            },
+            "maker_sky": {
+                "name": "MakerDAO / Sky",
+                "category": "stable_coin",
+                "contracts": {
+                    "dai_token": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+                    "maker_pot": "0x197E90f9FAD81970bA7976f33CBD77088E5D7cf7",
+                    "sdai_vault": "0x83F20F44975D03b1b09e64809B757c47f942BEea"
+                }
+            },
+            "pancakeswap_v3": {
+                "name": "PancakeSwap V3",
+                "category": "dexes",
+                "contracts": {
+                    "smart_router": "0x13f4EA83D0BD40E75C8222255bc855a974568Dd4"
+                }
+            },
+            "trader_joe": {
+                "name": "Trader Joe V2.1",
+                "category": "dexes",
+                "contracts": {
+                    "router_v2_1": "0xb4315e873dBcf7164F6FEA39d67e8854a39e2378"
+                }
+            },
+            "balancer_v2": {
+                "name": "Balancer V2",
+                "category": "dexes",
+                "contracts": {
+                    "vault": "0xBA12222222228d8Ba445958a75a0704d566BF2C8"
+                }
+            },
+            "ambient_finance": {
+                "name": "Ambient Finance",
+                "category": "dexes",
+                "contracts": {
+                    "dex": "0xAaAaAAAAAAaD24e586366338b2649a464522d0b5"
+                }
+            }
+        }
+    },
+    "11155111": {
+        "chain_name": "Ethereum Sepolia",
+        "network_type": "testnet",
+        "protocols": {
+            "aave_v3": {
+                "name": "Aave V3",
+                "category": "lending",
+                "contracts": {
+                    "pool": "0x6Ae43d3271ff6888e7Fc43Fd7321a503ff738951",
+                    "pool_addresses_provider": "0x012bAC54348C0E635dCAc9D5FB99f06F24136C9A"
+                }
+            },
+            "uniswap_v3": {
+                "name": "Uniswap V3",
+                "category": "dexes",
+                "contracts": {
+                    "swap_router_v2": "0x3fC91A3afd70395Cd496C647d5a6CC9D4B2b7FAD",
+                    "factory": "0x0227628f3F02366B6868344736521f77D2319f60"
+                }
+            }
+        }
+    },
+    "42161": {
+        "chain_name": "Arbitrum One",
+        "network_type": "mainnet",
+        "protocols": {
+            "aave_v3": {
+                "name": "Aave V3",
+                "category": "lending",
+                "contracts": {
+                    "pool": "0x794a61358D6845594F94dc1DB02A252b5b4814aD",
+                    "pool_addresses_provider": "0xa97B50a8274d081f2f8A15c8A3fA176B8a6C8987",
+                    "wrapped_token_gateway": "0xB952578f3520489a7169C009f0F507F56C717d9A"
+                }
+            },
+            "uniswap_v3": {
+                "name": "Uniswap V3",
+                "category": "dexes",
+                "contracts": {
+                    "swap_router_v2": "0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45",
+                    "factory": "0x1F98431c8cD987018177450100003786221E3743"
+                }
+            },
+            "compound_v3": {
+                "name": "Compound V3",
+                "category": "lending",
+                "contracts": {
+                    "usdc_comet": "0x9c4ec7B8A24c23f361172251666812F9809277f9"
+                }
+            },
+            "curve_finance": {
+                "name": "Curve Finance",
+                "category": "dexes",
+                "contracts": {
+                    "address_provider": "0x0000000022D53366457F9d5E6858170F02A0115a"
+                }
+            },
+            "pancakeswap_v3": {
+                "name": "PancakeSwap V3",
+                "category": "dexes",
+                "contracts": {
+                    "smart_router": "0x13f4EA83D0BD40E75C8222255bc855a974568Dd4"
+                }
+            },
+            "venus_protocol": {
+                "name": "Venus Protocol",
+                "category": "lending",
+                "contracts": {
+                    "comptroller": "0x317c18b8bB67174F3a87521737770F2D6d4A9369"
+                }
+            },
+            "trader_joe": {
+                "name": "Trader Joe V2.1",
+                "category": "dexes",
+                "contracts": {
+                    "router_v2_1": "0xb4315e873dBcf7164F6FEA39d67e8854a39e2378"
+                }
+            },
+            "gmx_v2": {
+                "name": "GMX V2",
+                "category": "derivatives",
+                "contracts": {
+                    "router": "0x7452c558c66E98C4E20961347616D74263385731",
+                    "exchange_router": "0x7C68C7866A64FA2160F78EEaE12217C5c8116eed",
+                    "datastore": "0xFD70de6b91282D8017aA4E741e9Ae325CAb992d8"
+                }
+            },
+            "camelot_v3": {
+                "name": "Camelot V3",
+                "category": "dexes",
+                "contracts": {
+                    "router": "0x1F721E2911a12F66024817750dd12810a0209f9f",
+                    "factory": "0x1a3cd950346a0662d5fcf72c3ce10ba20f8fa8ed"
+                }
+            },
+            "balancer_v2": {
+                "name": "Balancer V2",
+                "category": "dexes",
+                "contracts": {
+                    "vault": "0xBA12222222228d8Ba445958a75a0704d566BF2C8"
+                }
+            }
+        }
+    },
+    "43114": {
+        "chain_name": "Avalanche C-Chain",
+        "network_type": "mainnet",
+        "protocols": {
+            "aave_v3": {
+                "name": "Aave V3",
+                "category": "lending",
+                "contracts": {
+                    "pool": "0x794a61358D6845594F94dc1DB02A252b5b4814aD",
+                    "pool_addresses_provider": "0xa97B50a8274d081f2f8A15c8A3fA176B8a6C8987",
+                    "wrapped_token_gateway": "0xE4e862A62b779B05d16AF6A45f56028747441584"
+                }
+            },
+            "uniswap_v3": {
+                "name": "Uniswap V3",
+                "category": "dexes",
+                "contracts": {
+                    "swap_router_v2": "0xbb00FF08d01D3650917029d1461B2D53CE379471"
+                }
+            },
+            "trader_joe": {
+                "name": "Trader Joe V2.1",
+                "category": "dexes",
+                "contracts": {
+                    "router_v2_1": "0x60aE616a2155Ee3d9A68541Ba4544862310933d4",
+                    "factory_v2_1": "0x8e42f2F4101563bF679975178e880FD87d3eFd4e"
+                }
+            },
+            "benqi_finance": {
+                "name": "Benqi Finance",
+                "category": "lending",
+                "contracts": {
+                    "comptroller": "0x486Af39B1DA7D54767C201346994a8567426c7d2"
+                }
+            },
+            "gmx_v2": {
+                "name": "GMX V2",
+                "category": "derivatives",
+                "contracts": {
+                    "router": "0x7452c558c66E98C4E20961347616D74263385731",
+                    "exchange_router": "0x7C68C7866A64FA2160F78EEaE12217C5c8116eed"
+                }
+            },
+            "balancer_v2": {
+                "name": "Balancer V2",
+                "category": "dexes",
+                "contracts": {
+                    "vault": "0xBA12222222228d8Ba445958a75a0704d566BF2C8"
+                }
+            }
+        }
+    },
+    "43113": {
+        "chain_name": "Avalanche Fuji",
+        "network_type": "testnet",
+        "protocols": {
+            "aave_v3": {
+                "name": "Aave V3",
+                "category": "lending",
+                "contracts": {
+                    "pool": "0x0715A7794a1dc8e42615F059dD6e406A6594651A"
+                }
+            }
+        }
+    },
+    "137": {
+        "chain_name": "Polygon",
+        "network_type": "mainnet",
+        "protocols": {
+            "aave_v3": {
+                "name": "Aave V3",
+                "category": "lending",
+                "contracts": {
+                    "pool": "0x794a61358D6845594F94dc1DB02A252b5b4814aD"
+                }
+            },
+            "uniswap_v3": {
+                "name": "Uniswap V3",
+                "category": "dexes",
+                "contracts": {
+                    "swap_router_v2": "0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45",
+                    "factory": "0x1F98431c8cD987018177450100003786221E3743"
+                }
+            },
+            "compound_v3": {
+                "name": "Compound V3",
+                "category": "lending",
+                "contracts": {
+                    "usdc_comet": "0xF25212E676D1F7F89Cd72fFEe66158f541246445"
+                }
+            },
+            "quickswap_v3": {
+                "name": "QuickSwap V3",
+                "category": "dexes",
+                "contracts": {
+                    "router": "0xf5b509bB0909a69B1c207E495f6722596C826119",
+                    "factory": "0x411b0fAcC3489691f28ad58c47006AF5E3Ab3A28"
+                }
+            },
+            "balancer_v2": {
+                "name": "Balancer V2",
+                "category": "dexes",
+                "contracts": {
+                    "vault": "0xBA12222222228d8Ba445958a75a0704d566BF2C8"
+                }
+            }
+        }
+    },
+    "10": {
+        "chain_name": "Optimism",
+        "network_type": "mainnet",
+        "protocols": {
+            "aave_v3": {
+                "name": "Aave V3",
+                "category": "lending",
+                "contracts": {
+                    "pool": "0x794a61358D6845594F94dc1DB02A252b5b4814aD"
+                }
+            },
+            "uniswap_v3": {
+                "name": "Uniswap V3",
+                "category": "dexes",
+                "contracts": {
+                    "swap_router_v2": "0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45",
+                    "factory": "0x1F98431c8cD987018177450100003786221E3743"
+                }
+            },
+            "compound_v3": {
+                "name": "Compound V3",
+                "category": "lending",
+                "contracts": {
+                    "usdc_comet": "0x2e44e174f7D53F0212823acC11C01A11d58c5bCB"
+                }
+            },
+            "velodrome_v2": {
+                "name": "Velodrome V2",
+                "category": "dexes",
+                "contracts": {
+                    "router": "0xa062aE8A9c5e11aaA018fc15E653c4b158252d30",
+                    "factory": "0xF1046053aa5682b4F9a81b5481394DA16BE5FF5a"
+                }
+            }
+        }
+    },
+    "8453": {
+        "chain_name": "Base Mainnet",
+        "network_type": "mainnet",
+        "protocols": {
+            "aave_v3": {
+                "name": "Aave V3",
+                "category": "lending",
+                "contracts": {
+                    "pool": "0xA238Dd80C259a72e81d7e4664a9801593F98d1c5",
+                    "pool_addresses_provider": "0xe20fCBdBfFC4Dd138cE8b2E6FBb6CB49777ad64D"
+                }
+            },
+            "aerodrome": {
+                "name": "Aerodrome Finance",
+                "category": "dexes",
+                "contracts": {
+                    "router": "0xcF77a3Ba9A5CA399B7c97c74d54e5b1Beb874E43",
+                    "factory": "0x420DD381b31aEf6683db6B902084cB0FFECe40Da"
+                }
+            },
+            "uniswap_v3": {
+                "name": "Uniswap V3",
+                "category": "dexes",
+                "contracts": {
+                    "swap_router_v2": "0x26266B0c62E8A324780650e417a8B8b9A5b801D3",
+                    "factory": "0x33128a8fC17869897dcE68Ed026d694621f6FDfD"
+                }
+            },
+            "compound_v3": {
+                "name": "Compound V3",
+                "category": "lending",
+                "contracts": {
+                    "usdc_comet": "0xb125E6687d4313864e53df431d5425969c15Eb2F"
+                }
+            },
+            "pancakeswap_v3": {
+                "name": "PancakeSwap V3",
+                "category": "dexes",
+                "contracts": {
+                    "smart_router": "0x13f4EA83D0BD40E75C8222255bc855a974568Dd4"
+                }
+            }
+        }
+    },
+    "84532": {
+        "chain_name": "Base Sepolia",
+        "network_type": "testnet",
+        "protocols": {
+            "aave_v3": {
+                "name": "Aave V3",
+                "category": "lending",
+                "contracts": {
+                    "pool": "0x0715A7794a1dc8e42615F059dD6e406A6594651A"
+                }
+            }
+        }
+    },
+    "5000": {
+        "chain_name": "Mantle",
+        "network_type": "mainnet",
+        "protocols": {
+            "aave_v3": {
+                "name": "Aave V3",
+                "category": "lending",
+                "contracts": {
+                    "pool": "0x446B86307137f8D4971c2FA2F33177699F200C2a"
+                }
+            },
+            "agni_finance": {
+                "name": "Agni Finance",
+                "category": "dexes",
+                "contracts": {
+                    "router": "0x319B69888b0d11cEc22caA5034e25FfFBDc88421",
+                    "factory": "0x218015CC580F2D43770d10526E3d5FE2d56a3eB2"
+                }
+            },
+            "fusionx": {
+                "name": "FusionX Finance",
+                "category": "dexes",
+                "contracts": {
+                    "router": "0x2BBA36e3c8808D5B0a3eCaa88034033C910f131a"
+                }
+            },
+            "mantle_liquid_staking": {
+                "name": "Mantle Liquid Staking (mETH)",
+                "category": "yields",
+                "contracts": {
+                    "meth_token": "0xcDA86A272531e8640cD7F1a92c01839911B90bb0",
+                    "staking_pool": "0xe3c80b730623d240d0f50fa5400d4fb7eb21516e"
+                }
+            }
+        }
+    },
+    "5003": {
+        "chain_name": "Mantle Sepolia",
+        "network_type": "testnet",
+        "protocols": {
+            "agni_finance": {
+                "name": "Agni Finance Testnet",
+                "category": "dexes",
+                "contracts": {
+                    "router": "0x1d2F8f583592D731a54b3240eFfF37D3b5b1442B"
+                }
+            }
+        }
+    },
+    "56": {
+        "chain_name": "BNB Smart Chain",
+        "network_type": "mainnet",
+        "protocols": {
+            "pancakeswap_v3": {
+                "name": "PancakeSwap V3",
+                "category": "dexes",
+                "contracts": {
+                    "smart_router": "0x13f4EA83D0BD40E75C8222255bc855a974568Dd4",
+                    "factory": "0x0BFbCF9fa4f9C56B0F40a671Ad40E0805A091865"
+                }
+            },
+            "venus_protocol": {
+                "name": "Venus Protocol",
+                "category": "lending",
+                "contracts": {
+                    "comptroller": "0xfD36E2c2a6789Db23113685031d7F16329158384"
+                }
+            }
+        }
+    },
+    "100": {
+        "chain_name": "Gnosis Chain",
+        "network_type": "mainnet",
+        "protocols": {
+            "aave_v3": {
+                "name": "Aave V3",
+                "category": "lending",
+                "contracts": {
+                    "pool": "0xb50201558B00496A145fE76f7424749556E326D8"
+                }
+            },
+            "balancer_v2": {
+                "name": "Balancer V2",
+                "category": "dexes",
+                "contracts": {
+                    "vault": "0xBA12222222228d8Ba445958a75a0704d566BF2C8"
+                }
+            }
+        }
+    },
+    "42220": {
+        "chain_name": "Celo",
+        "network_type": "mainnet",
+        "protocols": {
+            "ubeswap": {
+                "name": "Ubeswap",
+                "category": "dexes",
+                "contracts": {
+                    "router": "0xE3D8bd01F006418480714c718aF566089d81d222",
+                    "factory": "0x62d5B84bE28a73611c296e8861B581e68999953F"
+                }
+            },
+            "uniswap_v3": {
+                "name": "Uniswap V3",
+                "category": "dexes",
+                "contracts": {
+                    "swap_router_v2": "0x5615CD77640fF55B228E824397789Cd767426874"
+                }
+            }
+        }
+    },
+    "324": {
+        "chain_name": "zkSync Era",
+        "network_type": "mainnet",
+        "protocols": {
+            "syncswap": {
+                "name": "SyncSwap",
+                "category": "dexes",
+                "contracts": {
+                    "router": "0x2da80408b03792af60510b00792952d563067325",
+                    "classic_factory": "0xf2DAd89f2788a8CD54625C60b55cD3d2D0ACa7Cb"
+                }
+            },
+            "mute_io": {
+                "name": "Mute.io",
+                "category": "dexes",
+                "contracts": {
+                    "router": "0x8B791913eB07C32779a16750e3868aA8495F5964"
+                }
+            }
+        }
+    },
+    "59144": {
+        "chain_name": "Linea",
+        "network_type": "mainnet",
+        "protocols": {
+            "lynex": {
+                "name": "Lynex",
+                "category": "dexes",
+                "contracts": {
+                    "router": "0x39aBFc341155986380633b4A6c92B9f518eA2EE2"
+                }
+            },
+            "syncswap": {
+                "name": "SyncSwap",
+                "category": "dexes",
+                "contracts": {
+                    "router": "0x80e38291e06339d10AAB483C65695D004dBD5C69"
+                }
+            }
+        }
+    },
+    "534352": {
+        "chain_name": "Scroll",
+        "network_type": "mainnet",
+        "protocols": {
+            "aave_v3": {
+                "name": "Aave V3",
+                "category": "lending",
+                "contracts": {
+                    "pool": "0x11fCfe90c3439cE24B923B2A6b4d3753A17B8097"
+                }
+            },
+            "ambient_finance": {
+                "name": "Ambient Finance",
+                "category": "dexes",
+                "contracts": {
+                    "dex": "0xAaAaAAAAAAaD24e586366338b2649a464522d0b5"
+                }
+            }
+        }
+    },
+    "146": {
+        "chain_name": "Sonic",
+        "network_type": "mainnet",
+        "protocols": {
+            "aave_v3": {
+                "name": "Aave V3",
+                "category": "lending",
+                "contracts": {
+                    "pool": "0xbA792E5fD884027785F24888126e0BfF6ed2C836"
+                }
+            },
+            "shadow_exchange": {
+                "name": "Shadow Exchange",
+                "category": "dexes",
+                "contracts": {
+                    "router": "0x1394f4a3901cf66191b26806085db6fe03487c69"
+                }
+            },
+            "beets_sonic": {
+                "name": "Beets (Balancer V2)",
+                "category": "dexes",
+                "contracts": {
+                    "vault": "0xBA12222222228d8Ba445958a75a0704d566BF2C8"
+                }
+            }
+        }
+    },
+    "80094": {
+        "chain_name": "Berachain",
+        "network_type": "mainnet",
+        "protocols": {
+            "kodiak_finance": {
+                "name": "Kodiak Finance",
+                "category": "dexes",
+                "contracts": {
+                    "router": "0xd411130d2267b2d5f06115fb6d3d9804b4c48ca0",
+                    "factory": "0xa4b1626244439c362947a195b05a76c8c4bc6e87"
+                }
+            }
+        }
+    },
+    "1101": {
+        "chain_name": "Polygon zkEVM",
+        "network_type": "mainnet",
+        "protocols": {
+            "quickswap_v3": {
+                "name": "QuickSwap V3",
+                "category": "dexes",
+                "contracts": {
+                    "router": "0xF6Ad22bAD7B67c7e5a60EBE592E5B1b461877028"
+                }
+            }
+        }
+    },
+    "25": {
+        "chain_name": "Cronos",
+        "network_type": "mainnet",
+        "protocols": {
+            "vvs_finance": {
+                "name": "VVS Finance",
+                "category": "dexes",
+                "contracts": {
+                    "router": "0x145863Eb42D628e9F6D6619fc704a29De648A399",
+                    "factory": "0x3b7232e66707397592B03aB7f93946E06aF57367"
+                }
+            }
+        }
+    }
+}
