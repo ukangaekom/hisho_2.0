@@ -2,7 +2,7 @@
   <h1>🐜 Hisho 2.0</h1>
   <p><strong>A lightning-fast, terminal-native AI agent for multi-chain EVM networks.</strong></p>
 
-  [![License: MIT OR Apache-2.0](https://img.shields.io/badge/License-MIT%20%2F%20Apache--2.0-blue.svg)](LICENSE)
+  [![License: Private](https://img.shields.io/badge/License-Private-red.svg)](LICENSE)
   [![Rust Version](https://img.shields.io/badge/rustc-1.75%2B-brightgreen.svg)](https://www.rust-lang.org/)
   [![Build Status](https://img.shields.io/badge/build-passing-success.svg)](#installation)
 </div>
@@ -212,6 +212,6 @@ src/
 
 ## 📄 License
 
-Distributed under the **MIT OR Apache-2.0** License. See `LICENSE` for details.
+This project is **Private and Proprietary**. All rights reserved. See `LICENSE` for details.
 
 Developed with ❤️ by **Ekomabasi Ukanga** ([@ukangaekom](https://github.com/ukangaekom)).
