@@ -586,23 +586,783 @@
         {
             "name": "Arc",
             "mainnet": {
-                "chain_id": 0,
-                "rpc_url": "https://rpc.mainnet.arc.io",
+                "chain_id": 5042,
+                "rpc_url": "https://rpc.arc.network",
                 "native_token": {
                     "name": "USD Coin",
                     "symbol": "USDC"
                 },
-                "note": "Circle's Arc is EVM-compatible and currently in public testnet. Mainnet (beta) parameters, including the official chain ID and RPC endpoints, had not been published by Circle as of this writing (mid-2026) \u2014 verify at docs.arc.io before use."
+                "note": "Arc mainnet is live. USDC is the native gas token."
             },
             "testnet": {
                 "label": "Arc Testnet",
                 "chain_id": 5042002,
-                "rpc_url": "https://rpc.testnet.arc.io",
+                "rpc_url": "https://rpc.testnet.arc.network",
                 "native_token": {
                     "name": "USD Coin",
                     "symbol": "USDC"
                 },
-                "note": "USDC is used as the native gas token, not a separate testnet asset."
+                "note": "USDC is used as the native gas token."
+            }
+        },
+        {
+            "name": "Monad",
+            "mainnet": {
+                "chain_id": 143,
+                "rpc_url": "https://rpc.monad.xyz",
+                "native_token": {
+                    "name": "Monad",
+                    "symbol": "MON"
+                }
+            },
+            "testnet": {
+                "label": "Monad Testnet",
+                "chain_id": 10143,
+                "rpc_url": "https://testnet-rpc.monad.xyz",
+                "native_token": {
+                    "name": "Testnet MON",
+                    "symbol": "MON"
+                }
+            }
+        },
+        {
+            "name": "MegaETH",
+            "mainnet": {
+                "chain_id": 4326,
+                "rpc_url": "https://mainnet.megaeth.com/rpc",
+                "native_token": {
+                    "name": "Ether",
+                    "symbol": "ETH"
+                }
+            },
+            "testnet": {
+                "label": "MegaETH Carrot Testnet",
+                "chain_id": 6342,
+                "rpc_url": "https://carrot.megaeth.com/rpc",
+                "native_token": {
+                    "name": "Ether",
+                    "symbol": "ETH"
+                }
+            }
+        },
+        {
+            "name": "HyperEVM",
+            "mainnet": {
+                "chain_id": 999,
+                "rpc_url": "https://rpc.hyperliquid.xyz/evm",
+                "native_token": {
+                    "name": "HYPE",
+                    "symbol": "HYPE"
+                }
+            },
+            "testnet": {
+                "label": "HyperEVM Testnet",
+                "chain_id": 998,
+                "rpc_url": "https://rpc.hyperliquid-testnet.xyz/evm",
+                "native_token": {
+                    "name": "HYPE",
+                    "symbol": "HYPE"
+                }
+            }
+        },
+        {
+            "name": "Abstract",
+            "mainnet": {
+                "chain_id": 2741,
+                "rpc_url": "https://api.mainnet.abs.xyz",
+                "native_token": {
+                    "name": "Ether",
+                    "symbol": "ETH"
+                }
+            },
+            "testnet": {
+                "label": "Abstract Testnet",
+                "chain_id": 11124,
+                "rpc_url": "https://api.testnet.abs.xyz",
+                "native_token": {
+                    "name": "Ether",
+                    "symbol": "ETH"
+                }
+            }
+        },
+        {
+            "name": "Ronin",
+            "mainnet": {
+                "chain_id": 2020,
+                "rpc_url": "https://api.roninchain.com/rpc",
+                "native_token": {
+                    "name": "Ronin",
+                    "symbol": "RON"
+                }
+            },
+            "testnet": {
+                "label": "Saigon",
+                "chain_id": 2021,
+                "rpc_url": "https://saigon-testnet.roninchain.com/rpc",
+                "native_token": {
+                    "name": "Ronin",
+                    "symbol": "RON"
+                }
+            }
+        },
+        {
+            "name": "ApeChain",
+            "mainnet": {
+                "chain_id": 33139,
+                "rpc_url": "https://apechain.calderachain.xyz/http",
+                "native_token": {
+                    "name": "ApeCoin",
+                    "symbol": "APE"
+                }
+            },
+            "testnet": {
+                "label": "Curtis",
+                "chain_id": 33111,
+                "rpc_url": "https://curtis.rpc.caldera.xyz/http",
+                "native_token": {
+                    "name": "ApeCoin",
+                    "symbol": "APE"
+                }
+            }
+        },
+        {
+            "name": "Plume",
+            "mainnet": {
+                "chain_id": 98866,
+                "rpc_url": "https://rpc.plume.org",
+                "native_token": {
+                    "name": "Plume",
+                    "symbol": "PLUME"
+                }
+            },
+            "testnet": {
+                "label": "Plume Testnet",
+                "chain_id": 98867,
+                "rpc_url": "https://testnet-rpc.plume.org",
+                "native_token": {
+                    "name": "Plume",
+                    "symbol": "PLUME"
+                }
+            }
+        },
+        {
+            "name": "Lens",
+            "mainnet": {
+                "chain_id": 232,
+                "rpc_url": "https://rpc.lens.xyz",
+                "native_token": {
+                    "name": "GHO",
+                    "symbol": "GHO"
+                }
+            },
+            "testnet": {
+                "label": "Lens Testnet",
+                "chain_id": 37111,
+                "rpc_url": "https://rpc.testnet.lens.xyz",
+                "native_token": {
+                    "name": "GHO",
+                    "symbol": "GHO"
+                }
+            }
+        },
+        {
+            "name": "B3",
+            "mainnet": {
+                "chain_id": 8333,
+                "rpc_url": "https://mainnet-rpc.b3.fun",
+                "native_token": {
+                    "name": "Ether",
+                    "symbol": "ETH"
+                }
+            },
+            "testnet": {
+                "label": "B3 Sepolia",
+                "chain_id": 1993,
+                "rpc_url": "https://sepolia.b3.fun",
+                "native_token": {
+                    "name": "Ether",
+                    "symbol": "ETH"
+                }
+            }
+        },
+        {
+            "name": "Zircuit",
+            "mainnet": {
+                "chain_id": 48900,
+                "rpc_url": "https://mainnet.zircuit.com",
+                "native_token": {
+                    "name": "Ether",
+                    "symbol": "ETH"
+                }
+            },
+            "testnet": {
+                "label": "Zircuit Garfield Testnet",
+                "chain_id": 48898,
+                "rpc_url": "https://garfield-testnet.zircuit.com",
+                "native_token": {
+                    "name": "Ether",
+                    "symbol": "ETH"
+                }
+            }
+        },
+        {
+            "name": "Immutable zkEVM",
+            "mainnet": {
+                "chain_id": 13371,
+                "rpc_url": "https://rpc.immutable.com",
+                "native_token": {
+                    "name": "Immutable X",
+                    "symbol": "IMX"
+                }
+            },
+            "testnet": {
+                "label": "Immutable zkEVM Testnet",
+                "chain_id": 13473,
+                "rpc_url": "https://rpc.testnet.immutable.com",
+                "native_token": {
+                    "name": "Immutable X",
+                    "symbol": "IMX"
+                }
+            }
+        },
+        {
+            "name": "Morph",
+            "mainnet": {
+                "chain_id": 2818,
+                "rpc_url": "https://rpc-quicknode.morph.network",
+                "native_token": {
+                    "name": "Ether",
+                    "symbol": "ETH"
+                }
+            },
+            "testnet": {
+                "label": "Morph Hoodi Testnet",
+                "chain_id": 2910,
+                "rpc_url": "https://rpc-hoodi.morphl2.io",
+                "native_token": {
+                    "name": "Ether",
+                    "symbol": "ETH"
+                }
+            }
+        },
+        {
+            "name": "TAC",
+            "mainnet": {
+                "chain_id": 239,
+                "rpc_url": "https://rpc.tac.build",
+                "native_token": {
+                    "name": "TAC",
+                    "symbol": "TAC"
+                }
+            },
+            "testnet": {
+                "label": "TAC SPB Testnet",
+                "chain_id": 2391,
+                "rpc_url": "https://spb.rpc.tac.build",
+                "native_token": {
+                    "name": "TAC",
+                    "symbol": "TAC"
+                }
+            }
+        },
+        {
+            "name": "Chiliz Chain",
+            "mainnet": {
+                "chain_id": 88888,
+                "rpc_url": "https://rpc.ankr.com/chiliz",
+                "native_token": {
+                    "name": "Chiliz",
+                    "symbol": "CHZ"
+                }
+            },
+            "testnet": {
+                "label": "Chiliz Spicy Testnet",
+                "chain_id": 88882,
+                "rpc_url": "https://spicy-rpc.chiliz.com",
+                "native_token": {
+                    "name": "Chiliz",
+                    "symbol": "CHZ"
+                }
+            }
+        },
+        {
+            "name": "Flow EVM",
+            "mainnet": {
+                "chain_id": 747,
+                "rpc_url": "https://mainnet.evm.nodes.onflow.org",
+                "native_token": {
+                    "name": "Flow",
+                    "symbol": "FLOW"
+                }
+            },
+            "testnet": {
+                "label": "Flow EVM Testnet",
+                "chain_id": 545,
+                "rpc_url": "https://testnet.evm.nodes.onflow.org",
+                "native_token": {
+                    "name": "Flow",
+                    "symbol": "FLOW"
+                }
+            }
+        },
+        {
+            "name": "BOB",
+            "mainnet": {
+                "chain_id": 60808,
+                "rpc_url": "https://rpc.gobob.xyz",
+                "native_token": {
+                    "name": "Ether",
+                    "symbol": "ETH"
+                }
+            },
+            "testnet": {
+                "label": "BOB Sepolia",
+                "chain_id": 808813,
+                "rpc_url": "https://bob-sepolia.rpc.gobob.xyz",
+                "native_token": {
+                    "name": "Sepolia Ether",
+                    "symbol": "ETH"
+                }
+            }
+        },
+        {
+            "name": "Flare",
+            "mainnet": {
+                "chain_id": 14,
+                "rpc_url": "https://flare-api.flare.network/ext/C/rpc",
+                "native_token": {
+                    "name": "Flare",
+                    "symbol": "FLR"
+                }
+            },
+            "testnet": {
+                "label": "Coston2",
+                "chain_id": 114,
+                "rpc_url": "https://coston2-api.flare.network/ext/C/rpc",
+                "native_token": {
+                    "name": "Coston2 Flare",
+                    "symbol": "C2FLR"
+                }
+            }
+        },
+        {
+            "name": "Ethereum Classic",
+            "mainnet": {
+                "chain_id": 61,
+                "rpc_url": "https://etc.rivet.link",
+                "native_token": {
+                    "name": "Ether Classic",
+                    "symbol": "ETC"
+                }
+            },
+            "testnet": {
+                "label": "Mordor",
+                "chain_id": 63,
+                "rpc_url": "https://rpc.mordor.etccooperative.org",
+                "native_token": {
+                    "name": "Mordor Ether Classic",
+                    "symbol": "METC"
+                }
+            }
+        },
+        {
+            "name": "Hedera",
+            "mainnet": {
+                "chain_id": 295,
+                "rpc_url": "https://mainnet.hashio.io/api",
+                "native_token": {
+                    "name": "HBAR",
+                    "symbol": "HBAR"
+                }
+            },
+            "testnet": {
+                "label": "Hedera Testnet",
+                "chain_id": 296,
+                "rpc_url": "https://testnet.hashio.io/api",
+                "native_token": {
+                    "name": "HBAR",
+                    "symbol": "HBAR"
+                }
+            }
+        },
+        {
+            "name": "Filecoin EVM",
+            "mainnet": {
+                "chain_id": 314,
+                "rpc_url": "https://api.node.glif.io/rpc/v1",
+                "native_token": {
+                    "name": "Filecoin",
+                    "symbol": "FIL"
+                }
+            },
+            "testnet": {
+                "label": "Filecoin Calibration",
+                "chain_id": 314159,
+                "rpc_url": "https://api.calibration.node.glif.io/rpc/v1",
+                "native_token": {
+                    "name": "Filecoin",
+                    "symbol": "tFIL"
+                }
+            }
+        },
+        {
+            "name": "LUKSO",
+            "mainnet": {
+                "chain_id": 42,
+                "rpc_url": "https://42.rpc.thirdweb.com",
+                "native_token": {
+                    "name": "LUKSO",
+                    "symbol": "LYX"
+                }
+            },
+            "testnet": {
+                "label": "LUKSO Testnet",
+                "chain_id": 4201,
+                "rpc_url": "https://rpc.testnet.lukso.network",
+                "native_token": {
+                    "name": "LUKSO",
+                    "symbol": "LYXt"
+                }
+            }
+        },
+        {
+            "name": "Sei EVM",
+            "mainnet": {
+                "chain_id": 1329,
+                "rpc_url": "https://evm-rpc.sei-apis.com",
+                "native_token": {
+                    "name": "Sei",
+                    "symbol": "SEI"
+                }
+            },
+            "testnet": {
+                "label": "Sei EVM Testnet",
+                "chain_id": 1328,
+                "rpc_url": "https://evm-rpc-testnet.sei-apis.com",
+                "native_token": {
+                    "name": "Sei",
+                    "symbol": "SEI"
+                }
+            }
+        },
+        {
+            "name": "Astar",
+            "mainnet": {
+                "chain_id": 592,
+                "rpc_url": "https://evm.astar.network",
+                "native_token": {
+                    "name": "Astar",
+                    "symbol": "ASTR"
+                }
+            },
+            "testnet": {
+                "label": "Shibuya",
+                "chain_id": 81,
+                "rpc_url": "https://evm.shibuya.astar.network",
+                "native_token": {
+                    "name": "Shibuya",
+                    "symbol": "SBY"
+                }
+            }
+        },
+        {
+            "name": "Canto",
+            "mainnet": {
+                "chain_id": 7700,
+                "rpc_url": "https://canto.gravitychain.io",
+                "native_token": {
+                    "name": "Canto",
+                    "symbol": "CANTO"
+                }
+            },
+            "testnet": {
+                "label": "Canto Testnet",
+                "chain_id": 7701,
+                "rpc_url": "https://canto-testnet.plexnode.wtf",
+                "native_token": {
+                    "name": "Canto",
+                    "symbol": "CANTO"
+                }
+            }
+        },
+        {
+            "name": "Injective EVM",
+            "mainnet": {
+                "chain_id": 1776,
+                "rpc_url": "https://sentry.evm-rpc.injective.network",
+                "native_token": {
+                    "name": "Injective",
+                    "symbol": "INJ"
+                }
+            },
+            "testnet": {
+                "label": "Injective EVM Testnet",
+                "chain_id": 1439,
+                "rpc_url": "https://k8s.testnet.json-rpc.injective.network",
+                "native_token": {
+                    "name": "Injective",
+                    "symbol": "INJ"
+                }
+            }
+        },
+        {
+            "name": "Harmony",
+            "mainnet": {
+                "chain_id": 1666600000,
+                "rpc_url": "https://api.harmony.one",
+                "native_token": {
+                    "name": "ONE",
+                    "symbol": "ONE"
+                }
+            },
+            "testnet": {
+                "label": "Harmony Testnet Shard 0",
+                "chain_id": 1666700000,
+                "rpc_url": "https://api.s0.b.hmny.io",
+                "native_token": {
+                    "name": "ONE",
+                    "symbol": "ONE"
+                }
+            }
+        },
+        {
+            "name": "IoTeX",
+            "mainnet": {
+                "chain_id": 4689,
+                "rpc_url": "https://babel-api.mainnet.iotex.io",
+                "native_token": {
+                    "name": "IoTeX",
+                    "symbol": "IOTX"
+                }
+            },
+            "testnet": {
+                "label": "IoTeX Testnet",
+                "chain_id": 4690,
+                "rpc_url": "https://babel-api.testnet.iotex.io",
+                "native_token": {
+                    "name": "IoTeX",
+                    "symbol": "IOTX"
+                }
+            }
+        },
+        {
+            "name": "Telos EVM",
+            "mainnet": {
+                "chain_id": 40,
+                "rpc_url": "https://rpc.telos.net",
+                "native_token": {
+                    "name": "Telos",
+                    "symbol": "TLOS"
+                }
+            },
+            "testnet": {
+                "label": "Telos EVM Testnet",
+                "chain_id": 41,
+                "rpc_url": "https://testnet.telos.net/evm",
+                "native_token": {
+                    "name": "Telos",
+                    "symbol": "TLOS"
+                }
+            }
+        },
+        {
+            "name": "XDC Network",
+            "mainnet": {
+                "chain_id": 50,
+                "rpc_url": "https://xdc.public-rpc.com",
+                "native_token": {
+                    "name": "XDC",
+                    "symbol": "XDC"
+                }
+            },
+            "testnet": {
+                "label": "Apothem",
+                "chain_id": 51,
+                "rpc_url": "https://erpc.apothem.network",
+                "native_token": {
+                    "name": "XDC",
+                    "symbol": "TXDC"
+                }
+            }
+        },
+        {
+            "name": "Oasis Sapphire",
+            "mainnet": {
+                "chain_id": 23294,
+                "rpc_url": "https://sapphire.oasis.io",
+                "native_token": {
+                    "name": "Oasis",
+                    "symbol": "ROSE"
+                }
+            },
+            "testnet": {
+                "label": "Sapphire Testnet",
+                "chain_id": 23295,
+                "rpc_url": "https://testnet.sapphire.oasis.io",
+                "native_token": {
+                    "name": "Oasis",
+                    "symbol": "TEST"
+                }
+            }
+        },
+        {
+            "name": "Unichain",
+            "mainnet": {
+                "chain_id": 130,
+                "rpc_url": "https://mainnet.unichain.org",
+                "native_token": {
+                    "name": "Ether",
+                    "symbol": "ETH"
+                }
+            },
+            "testnet": {
+                "label": "Unichain Sepolia",
+                "chain_id": 1301,
+                "rpc_url": "https://sepolia.unichain.org",
+                "native_token": {
+                    "name": "Sepolia Ether",
+                    "symbol": "ETH"
+                }
+            }
+        },
+        {
+            "name": "World Chain",
+            "mainnet": {
+                "chain_id": 480,
+                "rpc_url": "https://worldchain-mainnet.g.alchemy.com/public",
+                "native_token": {
+                    "name": "Ether",
+                    "symbol": "ETH"
+                }
+            },
+            "testnet": {
+                "label": "World Chain Sepolia",
+                "chain_id": 4801,
+                "rpc_url": "https://worldchain-sepolia.g.alchemy.com/public",
+                "native_token": {
+                    "name": "Sepolia Ether",
+                    "symbol": "ETH"
+                }
+            }
+        },
+        {
+            "name": "Ink",
+            "mainnet": {
+                "chain_id": 57073,
+                "rpc_url": "https://rpc-gel.inkonchain.com",
+                "native_token": {
+                    "name": "Ether",
+                    "symbol": "ETH"
+                }
+            },
+            "testnet": {
+                "label": "Ink Sepolia",
+                "chain_id": 763373,
+                "rpc_url": "https://rpc-gel-sepolia.inkonchain.com",
+                "native_token": {
+                    "name": "Sepolia Ether",
+                    "symbol": "ETH"
+                }
+            }
+        },
+        {
+            "name": "Soneium",
+            "mainnet": {
+                "chain_id": 1868,
+                "rpc_url": "https://rpc.soneium.org",
+                "native_token": {
+                    "name": "Ether",
+                    "symbol": "ETH"
+                }
+            },
+            "testnet": {
+                "label": "Soneium Minato",
+                "chain_id": 1946,
+                "rpc_url": "https://rpc.minato.soneium.org",
+                "native_token": {
+                    "name": "Ether",
+                    "symbol": "ETH"
+                }
+            }
+        },
+        {
+            "name": "Fraxtal",
+            "mainnet": {
+                "chain_id": 252,
+                "rpc_url": "https://rpc.frax.com",
+                "native_token": {
+                    "name": "Frax Ether",
+                    "symbol": "frxETH"
+                }
+            },
+            "testnet": {
+                "label": "Fraxtal Testnet",
+                "chain_id": 2522,
+                "rpc_url": "https://rpc.testnet.frax.com",
+                "native_token": {
+                    "name": "Frax Ether",
+                    "symbol": "frxETH"
+                }
+            }
+        },
+        {
+            "name": "Rootstock",
+            "mainnet": {
+                "chain_id": 30,
+                "rpc_url": "https://public-node.rsk.co",
+                "native_token": {
+                    "name": "Rootstock Bitcoin",
+                    "symbol": "RBTC"
+                }
+            },
+            "testnet": {
+                "label": "Rootstock Testnet",
+                "chain_id": 31,
+                "rpc_url": "https://public-node.testnet.rsk.co",
+                "native_token": {
+                    "name": "Test Rootstock Bitcoin",
+                    "symbol": "tRBTC"
+                }
+            }
+        },
+        {
+            "name": "Zora",
+            "mainnet": {
+                "chain_id": 7777777,
+                "rpc_url": "https://rpc.zora.energy",
+                "native_token": {
+                    "name": "Ether",
+                    "symbol": "ETH"
+                }
+            },
+            "testnet": {
+                "label": "Zora Sepolia",
+                "chain_id": 999999999,
+                "rpc_url": "https://sepolia.rpc.zora.energy",
+                "native_token": {
+                    "name": "Sepolia Ether",
+                    "symbol": "ETH"
+                }
+            }
+        },
+        {
+            "name": "Taiko",
+            "mainnet": {
+                "chain_id": 167000,
+                "rpc_url": "https://rpc.mainnet.taiko.xyz",
+                "native_token": {
+                    "name": "Ether",
+                    "symbol": "ETH"
+                }
+            },
+            "testnet": {
+                "label": "Taiko Hoodi",
+                "chain_id": 167009,
+                "rpc_url": "https://rpc.hoodi.taiko.xyz",
+                "native_token": {
+                    "name": "Ether",
+                    "symbol": "ETH"
+                }
             }
         }
     ]
