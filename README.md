@@ -7,6 +7,15 @@ Hisho 2.0 is a Rust-powered blockchain copilot built for the terminal. It combin
 
 This project is intentionally EVM-first. The live chain registry is loaded from a centralized configuration file and supports a large set of mainnets and testnets across Ethereum-compatible ecosystems.
 
+<div align="center">
+  <p>
+    <img alt="Rust" src="https://img.shields.io/badge/Rust-000000?style=for-the-badge&logo=rust&logoColor=white" />
+    <img alt="AI Agent" src="https://img.shields.io/badge/AI-Agentic-22c55e?style=for-the-badge" />
+    <img alt="EVM" src="https://img.shields.io/badge/EVM-Multi-chain-3b82f6?style=for-the-badge" />
+    <img alt="Terminal" src="https://img.shields.io/badge/Terminal-First-0ea5e9?style=for-the-badge" />
+  </p>
+</div>
+
 ---
 
 ## Overview
@@ -18,8 +27,95 @@ Hisho gives you a direct way to:
 - query token and NFT metadata
 - work with the configured wallet and secure vault
 - use a conversational AI layer to translate natural-language prompts into structured operations
+- talk to blockchain infrastructure like a developer coworker, not a browser extension
 
 The current implementation is built around a terminal REPL, a settings wizard, an OS-keyring-backed wallet vault, and a dynamic chain registry that is refreshed through the project configuration rather than hard-coded runtime filters.
+
+---
+
+## Quick install
+
+### Bash / zsh
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/ukangaekom/hisho_2.0/main/install.sh | bash
+export PATH="$PATH:$HOME/.hisho/bin"
+source ~/.bashrc
+# or
+source ~/.zshrc
+```
+
+### PowerShell
+
+```powershell
+irm https://raw.githubusercontent.com/ukangaekom/hisho_2.0/main/install.ps1 | iex
+```
+
+Then restart your terminal or add the install folder to your user PATH:
+
+```powershell
+$env:Path += ";$env:LOCALAPPDATA\Programs\hisho"
+```
+
+### SSH-based source install
+
+```bash
+git clone git@github.com:ukangaekom/hisho_2.0.git
+cd hisho_2.0
+cargo install --path .
+```
+
+### Verify installation
+
+```bash
+hisho --help
+```
+
+---
+
+## Developer-facing product pitch
+
+```text
+╔══════════════════════════════════════════════════════════════════════╗
+║  Hisho 2.0                                                    ║
+║  Agentic multi-chain terminal copilot for EVM workflows         ║
+║  Rust-native • Secure vault • AI-native • Terminal-first        ║
+╚══════════════════════════════════════════════════════════════════════╝
+```
+
+Hisho is built for developers who want a fast, secure, and scriptable way to interact with blockchain state without relying on browser-heavy wallet UX. It gives you the feel of an AI coding assistant, but for on-chain systems: chain switching, wallet inspection, token queries, metadata retrieval, protocol-aware operations, and a natural-language interface for Web3 tasks.
+
+---
+
+## Agent ecosystem stickers
+
+Hisho is designed to fit naturally into the modern AI coding stack. These are the agent and tooling communities that feel at home alongside Hisho:
+
+- 🤖 Codex
+- ⚡ OpenCode
+- 🧠 Claude Code
+- 🧩 Cursor
+- 🌊 Windsurf
+- 🔧 Cline
+- 🦉 Roo Code
+- 🧵 Continue
+- 🛠️ Aider
+- 🐚 OpenHands
+- 🖱️ Goose
+- 🚀 Warp
+- ⚙️ Kiro
+- ☕ JetBrains Junie
+- ☁️ Amazon Q Developer
+- 🧪 Tabnine
+- ✨ Augment Code
+- ✅ Qodo
+- 🧭 Trae
+- 🐚 PearAI
+- 🕳️ Void
+- 💎 Gemini CLI
+- 🚀 Antigravity
+
+These are the “stickers” people can use when describing Hisho as a terminal-native, AI-first companion for blockchain and engineering workflows.
 
 ---
 
