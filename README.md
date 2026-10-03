@@ -23,6 +23,92 @@ The current implementation is built around a terminal REPL, a settings wizard, a
 
 ---
 
+## Installation guide
+
+### Prerequisites
+
+Before installing Hisho, make sure your machine has the Rust toolchain installed:
+
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+```
+
+On Linux, the OS keyring integration usually requires the system keyring development libraries:
+
+```bash
+# Debian / Ubuntu
+sudo apt install libsecret-1-dev pkg-config
+
+# Fedora
+sudo dnf install libsecret-devel pkg-config
+
+# Arch
+sudo pacman -S libsecret
+```
+
+### Quick install via curl
+
+Use the project installer script directly from the repository:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/ukangaekom/hisho_2.0/main/install.sh | bash
+```
+
+This installs the `hisho` binary into `$HOME/.hisho/bin` and prints the PATH export you need to add:
+
+```bash
+export PATH="$PATH:$HOME/.hisho/bin"
+```
+
+Then reload your shell:
+
+```bash
+source ~/.bashrc
+# or
+source ~/.zshrc
+```
+
+### SSH-based source install
+
+If you prefer to clone via SSH instead of HTTPS:
+
+```bash
+git clone git@github.com:ukangaekom/hisho_2.0.git
+cd hisho_2.0
+cargo install --path .
+```
+
+### Manual build from source
+
+```bash
+cargo build --release
+./target/release/hisho --help
+```
+
+After installation, verify the CLI is available:
+
+```bash
+hisho --help
+```
+
+### First run and setup flow
+
+Run the setup wizard to configure the network, wallet, and AI key:
+
+```bash
+hisho settings
+```
+
+If the app has not yet been configured, a first-time setup flow will also launch when you run:
+
+```bash
+hisho start
+```
+
+During setup, you will normally select a default chain, create or restore a wallet with a secure system PIN, and provide a Gemini API key for the AI layer.
+
+---
+
 ## Current implementation status
 
 The project is not a generic multi-chain abstraction layer for every blockchain. It is currently focused on EVM and EVM-compatible chains, with the active network list managed in the chain registry.
