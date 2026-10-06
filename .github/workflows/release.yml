@@ -45,6 +45,15 @@ jobs:
         with:
           targets: ${{ matrix.target }}
 
+      - name: Install protobuf compiler
+        uses: arduino/setup-protoc@v3
+        with:
+          version: "29.2"
+
+      - name: Verify protoc is available
+        shell: bash
+        run: protoc --version
+
       - name: Build release binary
         run: cargo build --release --target ${{ matrix.target }}
 
