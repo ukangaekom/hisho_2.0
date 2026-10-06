@@ -19,9 +19,15 @@ pub async fn report_result(_text: &str) -> Result<String, Error> {
         ChatMessage::user(_text),
     ]);
 
-    let model: &str = "gemini-2.5-flash";
+    let model_name = crate::settings::config::AppSettings::fetch()
+        .ok()
+        .flatten()
+        .and_then(|settings| settings.model_name)
+        .unwrap_or_else(|| "gemini-2.5-flash".to_string());
+    let model = crate::settings::config::resolve_genai_model_name(&model_name)
+        .map_err(|err| eyre::eyre!(err))?;
 
-    let chat_res = client.exec_chat(model, chat_req, None).await;
+    let chat_res = client.exec_chat(&model, chat_req, None).await;
 
     match chat_res {
         Ok(res) => Ok(res.into_first_text().unwrap_or_default()),

@@ -38,15 +38,9 @@ async fn main() {
     // Load .env files if present
     let _ = dotenv_flow::dotenv();
 
-    // Universal environment initialization for AppSettings / GEMINI_API_KEY
+    // Initialize the configured AI model provider's API key.
     if let Ok(Some(settings)) = settings::config::AppSettings::fetch() {
-        if let Some(ref key) = settings.gemini_api_key {
-            if !key.trim().is_empty() {
-                unsafe {
-                    std::env::set_var("GEMINI_API_KEY", key);
-                }
-            }
-        }
+        settings::config::apply_configured_ai_key(&settings);
     }
 
     // 1. Load the "Big" FIGlet font for a larger, bolder presence

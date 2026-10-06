@@ -238,6 +238,8 @@ pub fn switch_chain(query: &str) -> String {
         _ => crate::settings::config::AppSettings {
             default_chain: matched_chain.clone(),
             custom_rpc: None,
+            model_name: None,
+            api_key: None,
             gemini_api_key: None,
             wallet_address: None,
         },
