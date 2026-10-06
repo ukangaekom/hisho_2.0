@@ -3,7 +3,7 @@
   <p><strong>Terminal-native AI agent for multi-chain on-chain finance</strong></p>
 </div>
 
-Hisho 2.0 is a Rust-powered blockchain copilot built for the terminal. It combines a native command-line interface, secure local wallet storage, and Google Gemini-driven intent parsing to help users interact with Web3 networks using natural language instead of custom scripts or browser wallets.
+Hisho 2.0 is a Rust-powered blockchain copilot built for the terminal. It combines a native command-line interface, secure local wallet storage, and configurable AI model providers for intent parsing and tool orchestration, helping users interact with Web3 networks using natural language instead of custom scripts or browser wallets.
 
 This project is intentionally EVM-first. The live chain registry is loaded from a centralized configuration file and supports a large set of mainnets and testnets across Ethereum-compatible ecosystems.
 
@@ -201,7 +201,33 @@ If the app has not yet been configured, a first-time setup flow will also launch
 hisho start
 ```
 
-During setup, you will normally select a default chain, create or restore a wallet with a secure system PIN, and provide a Gemini API key for the AI layer.
+During setup, select a default chain, create or restore a wallet with a secure system PIN, and choose an AI provider and exact model name. Enter that provider's API key when prompted, or use its existing environment variable.
+
+### AI model selection
+
+Use `hisho settings` to configure or change the AI provider, model name, and API key. The provider selector accepts these model-name patterns:
+
+| Provider | Model name pattern | API-key environment variable |
+| --- | --- | --- |
+| OpenAI | `gpt-*`, `o1-*`, `o3-*`, `o4-*`, `chatgpt-*`, `codex-*` | `OPENAI_API_KEY` |
+| OpenAI Responses | `gpt-5-*`, `gpt-6-*`, or `gpt-*` containing `codex` or `pro` | `OPENAI_API_KEY` |
+| Anthropic | `claude-*` | `ANTHROPIC_API_KEY` |
+| Gemini | `gemini-*` | `GEMINI_API_KEY` |
+| xAI | `grok-*` | `XAI_API_KEY` |
+| DeepSeek | `deepseek-*` | `DEEPSEEK_API_KEY` |
+| Moonshot / Kimi | `moonshot-*` or `kimi*` | `MOONSHOT_API_KEY` |
+| Zai | `glm-*` | `ZAI_API_KEY` |
+| Cohere | `command-*` or `embed-*` | `COHERE_API_KEY` |
+| Mimo | `mimo-*` | `MIMO_API_KEY` |
+| OpenCode Go | `opencode_go::model-name` | `OPENCODE_GO_API_KEY` |
+| Atlas Cloud | `atlascloud::model-name` | `ATLAS_CLOUD_API_KEY` |
+| Qwen Cloud | `qwen_cloud::model-name` | `QWEN_CLOUD_API_KEY` |
+| Fireworks | A model name containing `fireworks` | `FIREWORKS_API_KEY` |
+| Ollama | Any other model name; routed to local Ollama | No key required |
+
+The model ID is entered as text so you can use model names beyond a fixed in-app catalog. The API-key prompt is masked. Keys entered in Settings are stored in the application settings JSON file; they are separate from the wallet seed phrase, which is stored in the OS keyring. For environments where you do not want a key saved in that file, set the provider's environment variable instead.
+
+Provider routing depends on the installed `genai` adapter. `gpt-6-*` is routed through the OpenAI Responses adapter; `kimi*` is routed through Moonshot; and `qwen_cloud::` names are translated to the Aliyun adapter's `aliyun::` model namespace. Atlas Cloud is listed in the selector, but the installed adapter does not support it yet, so requests using it return an unsupported-provider error. Confirm the endpoint and credentials expected by your Qwen Cloud account before relying on the Aliyun route.
 
 ---
 
@@ -216,7 +242,7 @@ The project is not a generic multi-chain abstraction layer for every blockchain.
 - Chain matching logic is implemented in `src/settings/chain.rs` for exact matches, normalized names, native token symbols, and fuzzy matching.
 - Wallet storage and key protection are handled in `src/settings/storage.rs` and `src/settings/wallet.rs`.
 - Token ingestion for the database is handled in `src/database/chain_data.rs`.
-- The project uses Gemini for AI intent parsing and tool orchestration.
+- The project uses a configurable AI model for intent parsing and tool orchestration. See [AI model selection](#ai-model-selection) for supported model-name patterns and routing notes.
 
 ### Current network coverage
 
@@ -313,7 +339,7 @@ The wallet system is designed around:
 
 ### AI-driven command interpretation
 
-The project integrates with Google Gemini to convert natural-language requests into tool calls and structured operations. The assistant is meant to handle chat-style prompts such as:
+The project integrates with configurable AI providers to convert natural-language requests into tool calls and structured operations. The assistant is meant to handle chat-style prompts such as:
 
 - "Check my ETH balance on Ethereum"
 - "Switch to Base Sepolia"
@@ -384,7 +410,8 @@ This will walk the user through:
 - choosing a default blockchain
 - setting a system PIN
 - creating or loading the secure wallet
-- configuring the Gemini API key
+- choosing an AI provider and model name
+- configuring its API key
 
 ### 2. Start the agent
 
@@ -399,7 +426,7 @@ If configuration is incomplete, the app triggers the setup flow automatically.
 The project also exposes the settings menu directly from the CLI, where the user can configure or review:
 
 - active network
-- Gemini API key
+- selected AI model and API-key status
 - wallet visibility and public address
 - runtime configuration state
 
@@ -476,7 +503,8 @@ Hisho is an advanced terminal-based Web3 assistant, but the active implementatio
 
 - primary focus is EVM-compatible networks and tokens
 - wallet operations are designed around the local system keyring and active user configuration
-- Gemini integration requires a valid API key to unlock the full AI experience
+- Hosted AI providers require a valid API key to unlock the full AI experience; local Ollama models do not require a cloud key
+- Atlas Cloud model names are selectable but are not supported by the installed `genai` adapter yet
 - the chain registry is actively evolving and is intentionally driven by the source configuration file rather than a fixed static list
 
 ---
